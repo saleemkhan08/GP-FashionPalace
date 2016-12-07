@@ -1,0 +1,70 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <dimen name="app_bar_height">360dp</dimen>
+    <dimen name="fab_margin">7dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="rippleStrokeWidth">2dp</dimen>
+    <dimen name="rippleRadius">64dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="map_padding">20dp</dimen>
+    <dimen name="marker_padding">32.5dp</dimen>
+    <dimen name="panelHeight">60dp</dimen>
+
+    <integer name="add_photo_x_offset">70</integer>
+    <integer name="add_photo_y_offset">150</integer>
+
+    <integer name="select_location_x_offset">190</integer>
+    <integer name="select_location_y_offset">-50</integer>
+
+    <integer name="set_radius_x_offset">6</integer>
+    <integer name="set_radius_y_offset">60</integer>
+    <dimen name="issue_action_icon_size">30dp</dimen>
+    <dimen name="issue_action_icon_margin">10dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="single_row_height">80dp</dimen>
+    <dimen name="multi_row_height">160dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="crop__bar_height">56dp</dimen>
+    <dimen name="dialog_title">22sp</dimen>
+    <dimen name="dialog_sub_title">25sp</dimen>
+    <dimen name="loginTitle">40sp</dimen>
+    <dimen name="loginDesc">25sp</dimen>
+    <dimen name="toolbar_title">35sp</dimen>
+    <dimen name="optionHeight">80dp</dimen>
+    <dimen name="loading">35dp</dimen>
+    <dimen name="issue_add_options_pad">8dp</dimen>
+    <dimen name="navigation_drawer_size">280dp</dimen>
+    <dimen name="drawer_list_item_size">40dp</dimen>
+    <dimen name="price_text_size">16sp</dimen>
+    <dimen name="discount_text_size">14sp</dimen>
+    <dimen name="sizes_button_width">40dp</dimen>
+    <dimen name="toolbar_img_padding">18dp</dimen>
+    <dimen name="drawer_icon_padding">14dp</dimen>
+    <dimen name="drawer_icon_top_padding">6dp</dimen>
+    <dimen name="favIconSize">28dp</dimen>
+    <dimen name="priceTagPadding">100dp</dimen>
+    <dimen name="dialogItemPadding">8dp</dimen>
+    <dimen name="cartTextPadding">3dp</dimen>
+    <dimen name="drawerOptionsTextSize">11sp</dimen>
+    <dimen name="userTextPadding">3dp</dimen>
+    <dimen name="categoryTitleSize">22sp</dimen>
+    <dimen name="categoryTitleTopMargin">25dp</dimen>
+    <dimen name="categoryRecyclerViewEndPadding">20dp</dimen>
+    <dimen name="categoryTitleBgHeight">270dp</dimen>
+    <dimen name="categoryContainerBottomPadding">10dp</dimen>
+    <dimen name="categoryRecyclerViewStartPadding">10dp</dimen>
+    <dimen name="negativeMargin">-10dp</dimen>
+    <dimen name="noOfProductSize">35dp</dimen>
+
+    <item name="totalWeight" format="float" type="dimen">11</item>
+    <item name="imageWeight" format="float" type="dimen">8.5</item>
+    <item name="titleWeight" format="float" type="dimen">1.5</item>
+    <item name="descWeight" format="float" type="dimen">1</item>
+</resources>

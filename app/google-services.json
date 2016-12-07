@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "91145008484",
+    "firebase_url": "https://gp-fashion-palace-31e58.firebaseio.com",
+    "project_id": "gp-fashion-palace-31e58",
+    "storage_bucket": "gp-fashion-palace-31e58.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91145008484:android:29601cf3a2ee277d",
+        "android_client_info": {
+          "package_name": "com.thnki.gp.fashion.palace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "91145008484-b94uihct4kftu2anq3ib2oae3o9d3fg9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thnki.gp.fashion.palace",
+            "certificate_hash": "18AF356F0FDB118ECB220A3BC2807581636B6DB8"
+          }
+        },
+        {
+          "client_id": "91145008484-mbssn2mskb6iv3emglkg9e033e3982vq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJqHkS6D4HNADa2PDzRADRFFgdF4mgIMc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "91145008484-mbssn2mskb6iv3emglkg9e033e3982vq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

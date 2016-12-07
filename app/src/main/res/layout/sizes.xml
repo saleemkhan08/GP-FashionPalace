@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/xsWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:tag="XS"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <Spinner
+            android:layout_width="1dp"
+            android:entries="@array/mensWear"
+            android:id="@+id/xsSpinner"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"
+            android:drawSelectorOnTop="true"
+            android:layout_height="1dp"/>
+
+        <TextView
+            android:id="@+id/xs"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:gravity="center"
+            android:text="@string/xs"
+            android:tag="XS"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:tag="S"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+        <Spinner
+            android:layout_width="1dp"
+            android:entries="@array/mensWear"
+            android:id="@+id/sSpinner"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"
+            android:drawSelectorOnTop="true"
+            android:layout_height="1dp"/>
+        <TextView
+            android:id="@+id/s"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/s"
+            android:tag="S"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:tag="M"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+        <Spinner
+            android:layout_width="1dp"
+            android:entries="@array/mensWear"
+            android:id="@+id/mSpinner"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"
+            android:drawSelectorOnTop="true"
+            android:layout_height="1dp"/>
+        <TextView
+            android:id="@+id/m"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/m"
+            android:tag="M"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/lWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:tag="L"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <Spinner
+            android:layout_width="1dp"
+            android:id="@+id/lSpinner"
+            android:visibility="invisible"
+            android:entries="@array/mensWear"
+            android:layout_centerInParent="true"
+            android:drawSelectorOnTop="true"
+            android:layout_height="1dp"/>
+        <TextView
+            android:id="@+id/l"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/l"
+            android:tag="L"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/xlWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:tag="XL"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+        <Spinner
+            android:layout_width="1dp"
+            android:entries="@array/mensWear"
+            android:id="@+id/xlSpinner"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"
+            android:drawSelectorOnTop="true"
+            android:layout_height="1dp"/>
+        <TextView
+            android:id="@+id/xl"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:tag="XL"
+            android:text="@string/xl"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/xxlWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:tag="XXL"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true">
+
+        <Spinner
+            android:layout_width="1dp"
+            android:entries="@array/mensWear"
+            android:id="@+id/xxlSpinner"
+            android:visibility="invisible"
+            android:layout_centerInParent="true"
+            android:drawSelectorOnTop="true"
+            android:layout_height="1dp"/>
+
+        <TextView
+            android:id="@+id/xxl"
+            android:layout_width="@dimen/sizes_button_width"
+            android:layout_height="@dimen/sizes_button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:background="@drawable/sizes_button_bg"
+            android:clickable="true"
+            android:gravity="center"
+            android:tag="XXL"
+            android:text="@string/xxl"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+
+
+
+    </RelativeLayout>
+
+</LinearLayout>

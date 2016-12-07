@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#192331</color>
+    <color name="colorPrimaryLight">#2a3b52</color>
+    <color name="colorPrimaryDark">#101720</color>
+    <color name="colorAccent">#d75a4a</color>
+    <color name="colorAccentPressed">#d7877c</color>
+    <color name="divider">#aaaaaa</color>
+    <color name="travel_mode">#F57C00</color>
+    <color name="travel_mode_pressed">#FF9f40</color>
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="background">#b6b6b6</color>
+    <color name="grey">#888</color>
+    <color name="half_black">#808080</color>
+    <color name="white">#fff</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="blue_semi_transparent">#805677fc</color>
+    <color name="blue_semi_transparent_pressed">#80738ffe</color>
+    <color name="pink">#881010</color>
+    <color name="colorAccentDark">#38A09E</color>
+    <color name="transparent_black">#50000000</color>
+    <color name="colorPrimaryDarkTransparent">#d0101720</color>
+    <color name="colorPrimaryDarkMoreTransparent">#90101720</color>
+    <color name="my_location_radius">#6055c4c1</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="colorPrimaryDarkPressed">#666f79</color>
+
+    <color name="crop__button_bar">#f3f3f3</color>
+    <color name="crop__button_text">#666666</color>
+    <color name="crop__selector_pressed">#aa000000</color>
+    <color name="crop__selector_focused">#77000000</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="colorAccentBgLite">#3bb1b1</color>
+    <color name="colorAccentBgDark">#0a1f1f</color>
+    <color name="windowBackground">#eee</color>
+    <color name="colorAccentTransparent">#55d75a4a</color>
+    <color name="drawerBackground">#ddd</color>
+    <color name="transparent_grey">#55AAAAAA</color>
+    <color name="colorSecondaryAccent">#d75a4a</color>
+    <color name="colorSecondaryDark">#101720</color>
+    <color name="colorSecondaryLight">#2a3b52</color>
+    <color name="colorSecondary">#192331</color>
+    <color name="delayed">#9900AAAA</color>
+    <color name="transparent_blue_2">#AA00BBAA</color>
+    <color name="packed">#BB00CCAA</color>
+    <color name="transparent_blue_4">#CC00DDAA</color>
+    <color name="shipped">#DD00EEAA</color>
+    <color name="transparent_blue_6">#EE00FFAA</color>
+    <color name="delivered">#FF00FFAA</color>
+    <color name="cancelled">#99cccccc</color>
+    <color name="returnRequested">#99bbbbbb</color>
+    <color name="returned">#99aaaaaa</color>
+    <color name="transparentWhite">#99ffffff</color>
+</resources>
