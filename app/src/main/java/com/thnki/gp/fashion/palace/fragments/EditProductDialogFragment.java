@@ -16,7 +16,7 @@ import android.widget.ScrollView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.thnki.gp.fashion.palace.R;
-import com.thnki.gp.fashion.palace.firebase.database.models.Products;
+import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.interfaces.Const;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;

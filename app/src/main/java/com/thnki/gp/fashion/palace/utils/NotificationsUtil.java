@@ -8,13 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -24,20 +17,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.NotificationModel;
-import com.thnki.gp.fashion.palace.interfaces.IOnTokensUpdatedListener;
-import com.thnki.gp.fashion.palace.interfaces.ResultListener;
-import com.thnki.gp.fashion.palace.singletons.VolleyUtil;
-
-import org.json.JSONObject;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.NotificationModel;
+import com.thnki.gp.fashion.palace.services.NotificationListenerService;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-
-import static com.thnki.gp.fashion.palace.singletons.VolleyUtil.RECEIVER_TOKENS;
 
 public class NotificationsUtil
 {
@@ -65,18 +50,22 @@ public class NotificationsUtil
 
     public void showNotification(NotificationModel data)
     {
-        if (data.photoUrl == null)
+        Log.d(NotificationListenerService.TAG, "showNotification : " + data);
+        showNotification(data, null);
+        /*if (data.photoUrl == null)
         {
             showNotification(data, null);
         }
         else
         {
+            Log.d(NotificationListenerService.TAG, "showNotification : Executing ShowNormalNotification" );
             new ShowNormalNotification().execute(data);
-        }
+        }*/
     }
 
     private void showNotification(NotificationModel model, Bitmap mLargeIcon)
     {
+        Log.d(NotificationListenerService.TAG, "showNotification : " + model + ", " + mLargeIcon);
         Context mAppContext = Brandfever.getAppContext();
         Intent contentIntent = new Intent(Brandfever.getAppContext(), StoreActivity.class);
 
@@ -106,6 +95,7 @@ public class NotificationsUtil
 
     private Bitmap getCircleBitmapFromUrl(String photoUrl)
     {
+        Log.d(NotificationListenerService.TAG, "showNotification : getCircleBitmapFromUrl");
         try
         {
             URL url = new URL(photoUrl);
@@ -114,7 +104,7 @@ public class NotificationsUtil
         catch (Exception e)
         {
             e.printStackTrace();
-            Log.d(TAG, " Error : " + e.getMessage());
+            Log.d(NotificationListenerService.TAG, " Error : " + e.getMessage());
         }
         return BitmapFactory.decodeResource(Brandfever.getAppContext().getResources(), R.mipmap.app_icon);
     }
@@ -125,8 +115,16 @@ public class NotificationsUtil
         Bitmap mLargeIcon;
 
         @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            Log.d(NotificationListenerService.TAG, "showNotification : onPreExecute");
+        }
+
+        @Override
         protected Void doInBackground(NotificationModel... params)
         {
+            Log.d(NotificationListenerService.TAG, "showNotification : doInBackground");
             mModel = params[0];
             mLargeIcon = getCircleBitmapFromUrl(mModel.photoUrl);
             return null;
@@ -135,13 +133,14 @@ public class NotificationsUtil
         @Override
         protected void onPostExecute(Void aVoid)
         {
+            Log.d(NotificationListenerService.TAG, "showNotification : onPostExecute");
             showNotification(mModel, mLargeIcon);
         }
     }
 
     private Bitmap getSquareBitmap(Bitmap srcBmp)
     {
-
+        Log.d(NotificationListenerService.TAG, "showNotification : getSquareBitmap");
         Bitmap dstBmp = Bitmap.createBitmap(
                 srcBmp,
                 0,
@@ -164,78 +163,26 @@ public class NotificationsUtil
         return Bitmap.createScaledBitmap(dstBmp, 120, 120, true);
     }
 
-    private Bitmap getCircleBitmap(Bitmap bitmap)
-    {
-        final Bitmap output = Bitmap.createBitmap(120,
-                120, Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
-
-        final int color = Color.RED;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, 120, 120);
-        final RectF rectF = new RectF(rect);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawOval(rectF, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        bitmap.recycle();
-        return output;
-    }
-
-    public void removeNotification(int id)
-    {
-        mNotificationManager.cancel(id);
-    }
-
-    private void saveNotificationInAllOwnersProfile(NotificationModel notificationModel, String userGoogleId)
-    {
-        /**
-         *  //TODO check if notificationModel already exits and then save it.
-         */
-        Log.d(TAG, "saveNotificationInAllOwnersProfile : " + notificationModel.toString());
-        saveNotification(notificationModel, userGoogleId);
-        for (String googleId : Brandfever.getPreferences().getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>()))
-        {
-            saveNotification(notificationModel, googleId);
-        }
-    }
-
     private void saveNotification(NotificationModel notificationModel, String googleId)
     {
         if (googleId != null && !googleId.equals(mPreferences.getString(Accounts.GOOGLE_ID, "")))
         {
-            Log.d(TAG, "Owner googleId : " + googleId);
+            Log.d("NotificationFlow", "saveNotification Owner googleId : " + googleId);
             DatabaseReference ownersNotificationDbRef = mRootDbRef.child(googleId).child(NotificationsUtil.TAG);
             ownersNotificationDbRef.push().setValue(notificationModel);
         }
     }
 
-    public void sendNotificationToAll(final NotificationModel model, final String googleId, final ResultListener<String> listener)
+    public void sendNotificationToAll(NotificationModel notificationModel, String userGoogleId)
     {
-        FcmTokensUtil.getInstance().updateAllTokens(googleId, new IOnTokensUpdatedListener()
+        /**
+         *  //TODO check if notificationModel already exits and then save it.
+         */
+        Log.d("NotificationFlow", "saveNotificationInAllOwnersProfile : " + notificationModel.toString());
+        saveNotification(notificationModel, userGoogleId);
+        for (String googleId : Brandfever.getPreferences().getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>()))
         {
-            @Override
-            public void onTokensUpdated(Map<String, String> ownersTokenList)
-            {
-                Log.d(TAG, "sendNotificationToAllOwners");
-                Map<String, String> data = new HashMap<>();
-                data.put(NotificationModel.GOOGLE_ID, model.googleId);
-                Log.d("OrderStatus", "sendNotificationToAll : " + model.action);
-                data.put(NotificationModel.ACTION, model.action);
-                data.put(NotificationModel.APP_ID, mPreferences.getString(VolleyUtil.APP_ID, Brandfever.getResString(R.string.serverKey)));
-                data.put(NotificationModel.NOTIFICATION, model.notification);
-                data.put(NotificationModel.PHOTO_URL, model.photoUrl);
-                data.put(NotificationModel.USERNAME, model.username);
-                data.put(RECEIVER_TOKENS, new JSONObject(ownersTokenList).toString());
-                Log.d(TAG, "Request : " + data);
-                VolleyUtil.getInstance().sendPostData(data, listener);
-                saveNotificationInAllOwnersProfile(model, googleId);
-            }
-        });
+            saveNotification(notificationModel, googleId);
+        }
     }
 }

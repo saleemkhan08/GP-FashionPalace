@@ -24,14 +24,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.Category;
-import com.thnki.gp.fashion.palace.firebase.database.models.NotificationModel;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Category;
+import com.thnki.gp.fashion.palace.models.NotificationModel;
 import com.thnki.gp.fashion.palace.interfaces.Const;
 import com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener;
 import com.thnki.gp.fashion.palace.singletons.Otto;
@@ -286,11 +287,13 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
 
     private RecyclerView.Adapter getAdapter()
     {
+        Query query = mAvailableCategoriesRef.orderByChild(CATEGORY_ID);
+        query.keepSynced(true);
         return new FirebaseRecyclerAdapter<Category, DrawerCategoryViewHolder>(
                 Category.class,
                 R.layout.category_list_item,
                 DrawerCategoryViewHolder.class,
-                mAvailableCategoriesRef.orderByChild(CATEGORY_ID))
+                query)
         {
 
             @Override

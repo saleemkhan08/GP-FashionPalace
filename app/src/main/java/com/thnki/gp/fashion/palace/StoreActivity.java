@@ -1,6 +1,5 @@
 package com.thnki.gp.fashion.palace;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -36,7 +35,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
 import com.thnki.gp.fashion.palace.fragments.CartFragment;
 import com.thnki.gp.fashion.palace.fragments.EditAddressDialogFragment;
 import com.thnki.gp.fashion.palace.fragments.FavoritesFragment;
@@ -45,11 +43,11 @@ import com.thnki.gp.fashion.palace.fragments.NotificationListFragment;
 import com.thnki.gp.fashion.palace.fragments.ProductsFragment;
 import com.thnki.gp.fashion.palace.fragments.UserListFragment;
 import com.thnki.gp.fashion.palace.fragments.UsersOrdersFragment;
+import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
-import com.thnki.gp.fashion.palace.utils.FcmTokensUtil;
 import com.thnki.gp.fashion.palace.utils.NavigationDrawerUtil;
 import com.thnki.gp.fashion.palace.utils.UserUtil;
 
@@ -59,7 +57,6 @@ import butterknife.OnClick;
 
 import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.LoginActivity.LOGIN_STATUS;
-import static com.thnki.gp.fashion.palace.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
 import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.REQUEST_CODE_SDCARD_PERMISSION;
 import static com.thnki.gp.fashion.palace.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
 import static com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener.ENTER;
@@ -73,6 +70,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
     public static final String OWNER_PROFILE_UPDATED = "ownerProfileUpdated";
     public static final String RESTART_ACTIVITY = "restartActivity";
     public static final String ON_REQUEST_PERMISSION_RESULT = "onRequestPermissionResult";
+    public static final String LOG_OUT = "logOut";
 
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
@@ -106,8 +104,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setupWindowProperties();
         mPreferences = Brandfever.getPreferences();
-        new UserUtil().updateToken();
-        FcmTokensUtil.getInstance().updateIsOwner();
+        UserUtil.updateIsOwner(mPreferences);
         setContentView(R.layout.activity_store);
         ButterKnife.bind(this);
         Otto.register(this);
@@ -147,6 +144,20 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                     break;
             }
         }
+        /*
+        Log.d("DataFilesList", "Src : " + srcFile.getAbsolutePath());
+        File dstFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DataFolder");
+        Log.d("DataFilesList", "Dst : " + dstFile.getAbsolutePath());
+        try
+        {
+            copyDirectories(srcFile, dstFile);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            Log.d("DataFilesList", "Exception : "+e.getMessage());
+        }*/
+
     }
 
     @Override
@@ -269,6 +280,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
     {
         super.onDestroy();
         Otto.unregister(this);
+        System.exit(0);
     }
 
     @OnClick(R.id.drawer)
@@ -328,31 +340,17 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                         @Override
                         public void onConnected(@Nullable Bundle bundle)
                         {
-                            String token = mPreferences.getString(NOTIFICATION_INSTANCE_ID, "");
-                            mPreferences.edit().clear()
-                                    .putString(NOTIFICATION_INSTANCE_ID, token)
-                                    .putBoolean(LOGIN_STATUS, false)
-                                    .apply();
-
                             FavoritesUtil.clearInstance();
                             CartUtil.clearInstance();
                             revokeAccess();
                             signOut();
-                            FirebaseAuth.getInstance().signOut();
-                            mProgressDialog.dismiss();
-                            clearApplicationData();
-                            startActivity(new Intent(StoreActivity.this, LoginActivity.class));
-                            finish();
+                            launchLoginActivity();
                         }
 
                         @Override
                         public void onConnectionSuspended(int i)
                         {
-                            FirebaseAuth.getInstance().signOut();
-                            startActivity(new Intent(StoreActivity.this, LoginActivity.class));
-                            mProgressDialog.dismiss();
-                            clearApplicationData();
-                            finish();
+                            launchLoginActivity();
                         }
                     });
                 }
@@ -362,6 +360,31 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         {
             toast(R.string.noInternet);
         }
+    }
+    public void forceCloseApp()
+    {
+        mProgressDialog.setMessage(getString(R.string.closingApplication));
+        mProgressDialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mProgressDialog.dismiss();
+                finishAffinity();
+            }
+        }, 1000);
+    }
+
+    private void launchLoginActivity()
+    {
+        mPreferences.edit().putBoolean(LOGIN_STATUS, false).apply();
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(StoreActivity.this, LoginActivity.class);
+        intent.putExtra(LOG_OUT, true);
+        startActivity(intent);
+        forceCloseApp();
     }
 
     public void setToolBarTitle(String title)
@@ -641,37 +664,6 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
                 toast(R.string.permissionRequiredToUploadPhotos);
                 toast(R.string.please_try_again);
             }
-        }
-    }
-
-    public void clearApplicationData()
-    {
-        try
-        {
-            if (!((ActivityManager) getSystemService(ACTIVITY_SERVICE))
-                    .clearApplicationUserData())
-            {
-                clearAppData();
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    private void clearAppData()
-    {
-        try
-        {
-            // clearing app data
-            Runtime runtime = Runtime.getRuntime();
-            runtime.exec("pm clear " + getPackageName());
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
         }
     }
 

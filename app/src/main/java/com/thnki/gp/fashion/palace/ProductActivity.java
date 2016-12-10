@@ -27,8 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.otto.Subscribe;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.Products;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.fragments.EditProductDialogFragment;
 import com.thnki.gp.fashion.palace.fragments.ProductPagerFragment;
 import com.thnki.gp.fashion.palace.singletons.Otto;
@@ -227,7 +227,6 @@ public class ProductActivity extends AppCompatActivity
                                 setupSizesUi();
                                 resetSizesUi();
                                 loadProductImages();
-                                return;
                             }
                         }
                     }
@@ -459,7 +458,7 @@ public class ProductActivity extends AppCompatActivity
     }
 
     @OnClick(R.id.favorite)
-    public void addToFavorite(ImageView favorite)
+    public void addToFavorite()
     {
         if (ConnectivityUtil.isConnected())
         {

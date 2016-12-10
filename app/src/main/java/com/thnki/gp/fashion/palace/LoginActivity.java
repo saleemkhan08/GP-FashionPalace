@@ -42,19 +42,15 @@ import com.thnki.gp.fashion.palace.utils.UserUtil;
 import butterknife.BindColor;
 import butterknife.ButterKnife;
 
-import static com.thnki.gp.fashion.palace.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
-
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, ConnectivityListener
 {
     private static final String TAG = "loginActivity";
-    public static final String LOG_OUT = "logOut";
     private GoogleApiClient mGoogleApiClient;
     private SharedPreferences mPreference;
     private static final int REQUEST_CODE_GOOGLE_PLAY_SERVICES = 198;
     private static final int REQUEST_CODE_GET_TOKEN = 199;
     public static final String LOGIN_STATUS = "login_status";
     private ProgressDialog mProgressDialog;
-    private boolean mIsFetched;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -87,8 +83,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
+
+        if (getIntent().getBooleanExtra(StoreActivity.LOG_OUT, false))
+        {
+            finishAffinity();
+        }
         // [END initialize_auth]
     }
+
+
 
     private void checkGooglePlayServices()
     {
@@ -166,11 +169,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             {
                 if (!mPreference.getBoolean(LOGIN_STATUS, false))
                 {
-                    String token = mPreference.getString(NOTIFICATION_INSTANCE_ID, "");
-                    mPreference.edit().clear()
-                            .putString(NOTIFICATION_INSTANCE_ID, token)
-                            .apply();
-
                     FavoritesUtil.clearInstance();
                     CartUtil.clearInstance();
                     revokeAccess();

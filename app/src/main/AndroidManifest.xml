@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.thnki.gp.fashion.palace"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -40,28 +41,6 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <service android:name=".firebase.fcm.NotificationReceiverService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        <service android:name=".firebase.fcm.NotificationInstanceIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-        <service
-            android:name=".services.NotificationJobService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE">
-        </service>
-        <service
-            android:name=".services.ShowNotificationService"
-            android:enabled="false"
-            android:exported="false">
-        </service>
-
         <receiver
             android:name=".receivers.ChargerConnectionReceiver"
             android:enabled="true"
@@ -70,8 +49,15 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".services.NotificationListenerService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

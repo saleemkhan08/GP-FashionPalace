@@ -201,7 +201,7 @@
     <string name="pleaseEnterValidPincode">Please Enter A Valid Pin Code</string>
     <string name="delete">Delete</string>
     <string name="ok">Ok</string>
-    <string name="serverKey">AIzaSyAP6sRTN8L2wfF-Q44DI7L1h8WN7AEYsXg</string>
+    <string name="serverKey">AAAAFTiqdWQ:APA91bF2v_Oa36cdd764Y2z-4jyDwRpWuxBJL5uuTDlcnLjNzS3EJVXfq9ILtnoIUSBqCwWs6pWNdrd5UdSLcY_gvPfjJUW6ncCtxRFcE6EYQ5p-WoyJ7Jmg0m9AqGJHHhWWZZugryX69UN_tN9RwveHc4pFA5nD7g</string>
     <string name="defaultUrl">http://www.thnki.com/fcm.php</string>
     <string name="uploaded">Uploaded!</string>
     <string name="photosWillBeUploadedInBackground">Photos Will Be Uploaded In Background!</string>
@@ -266,4 +266,5 @@
     <string name="youHaventPickedAnImage">You haven\'t picked Image</string>
     <string name="areYouSureYouWantToLogout">Are You Sure You Want To Logout?</string>
     <string name="xProducts">x</string>
+    <string name="closingApplication">Closing Application ...</string>
 </resources>

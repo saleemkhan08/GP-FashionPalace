@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
 import com.thnki.gp.fashion.palace.adapters.UsersAdapter;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.utils.UserUtil;
 import com.thnki.gp.fashion.palace.view.holders.AccountsViewHolder;
 

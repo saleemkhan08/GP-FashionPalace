@@ -1,15 +1,11 @@
 package com.thnki.gp.fashion.palace.receivers;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.util.Log;
 
-import com.thnki.gp.fashion.palace.services.NotificationJobService;
-import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
+import com.thnki.gp.fashion.palace.services.NotificationListenerService;
 
 public class ChargerConnectionReceiver extends BroadcastReceiver
 {
@@ -22,22 +18,7 @@ public class ChargerConnectionReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if (Build.VERSION.SDK_INT >= 21)
-        {
-            ComponentName componentName = new ComponentName(context, NotificationJobService.class);
-            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            JobInfo jobInfo = new JobInfo.Builder(NOTIFICATION_JOB_NUM, componentName)
-                    .setPersisted(true)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .build();
-            jobScheduler.schedule(jobInfo);
-        }
-        else
-        {
-            if (ConnectivityUtil.isConnected())
-            {
-                //TODO context.startService(new Intent(context, ShowNotificationService.class));
-            }
-        }
+        Log.d(NotificationListenerService.TAG, "onBroadcastReceived");
+        context.startService(new Intent(context, NotificationListenerService.class));
     }
 }

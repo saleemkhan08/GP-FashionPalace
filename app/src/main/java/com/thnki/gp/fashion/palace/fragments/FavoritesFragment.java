@@ -21,8 +21,8 @@ import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
 import com.thnki.gp.fashion.palace.adapters.FavoritesAdapter;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.FavoriteProduct;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.FavoriteProduct;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
 import com.thnki.gp.fashion.palace.view.holders.WishListProductViewHolder;
 

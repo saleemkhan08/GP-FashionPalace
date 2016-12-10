@@ -13,8 +13,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.Category;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Category;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.singletons.VolleyUtil;
 

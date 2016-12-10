@@ -12,14 +12,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.LoginActivity;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.fcm.UpdateDeleteTokenAsyncTask;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.singletons.Otto;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.thnki.gp.fashion.palace.firebase.database.models.Accounts.USERS;
-import static com.thnki.gp.fashion.palace.firebase.fcm.NotificationInstanceIdService.NOTIFICATION_INSTANCE_ID;
+import static com.thnki.gp.fashion.palace.StoreActivity.OWNER_PROFILE_UPDATED;
+import static com.thnki.gp.fashion.palace.models.Accounts.USERS;
 import static com.thnki.gp.fashion.palace.singletons.VolleyUtil.APP_ID;
 import static com.thnki.gp.fashion.palace.singletons.VolleyUtil.DEFAULT_URL;
 import static com.thnki.gp.fashion.palace.singletons.VolleyUtil.REQUEST_HANDLER_URL;
@@ -34,6 +31,7 @@ public class UserUtil
     public static final String APP_DATA = "appData";
     public static final String USER_LIST = "users";
     public static final String OWNER_PHONE_NUMBER = "phoneNumber";
+    private static final String TAG = "userUtil";
     private Accounts mAccount;
     private SharedPreferences mPreferences;
 
@@ -54,17 +52,10 @@ public class UserUtil
         return databaseReference;
     }
 
-    public void updateToken()
-    {
-        new UpdateDeleteTokenAsyncTask().execute(true);
-    }
-
     public void register(GoogleSignInAccount googleSignInAccount)
     {
         if (googleSignInAccount != null)
         {
-            deleteToken();
-
             Uri photoUrl = googleSignInAccount.getPhotoUrl();
             mAccount.googleId = googleSignInAccount.getId();
             mAccount.email = googleSignInAccount.getEmail();
@@ -120,56 +111,6 @@ public class UserUtil
         });
     }
 
-    private void deleteToken()
-    {
-        String token = mPreferences.getString(NOTIFICATION_INSTANCE_ID, "");
-        if (!token.isEmpty())
-        {
-            new UpdateDeleteTokenAsyncTask().execute(false);
-        }
-    }
-
-    public Accounts getAccount()
-    {
-        return mAccount;
-    }
-
-    public void updateNotificationInstanceId(final String refreshedToken)
-    {
-        mPreferences.edit().putString(NOTIFICATION_INSTANCE_ID, refreshedToken).apply();
-
-        String googleId = mPreferences.getString(Accounts.GOOGLE_ID, "");
-        if (!googleId.isEmpty())
-        {
-            final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(USERS)
-                    .child(googleId);
-            databaseReference.addValueEventListener(new ValueEventListener()
-            {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot)
-                {
-                    try
-                    {
-                        mAccount = dataSnapshot.getValue(Accounts.class);
-                        mAccount.fcmToken = refreshedToken;
-                        updateUserInfo();
-                        databaseReference.removeEventListener(this);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.d("Exception", e.getMessage());
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError)
-                {
-
-                }
-            });
-        }
-    }
-
     private void updateUserInfo()
     {
         final DatabaseReference usersDbRef = getDbReference();
@@ -179,16 +120,49 @@ public class UserUtil
         }
     }
 
-    public boolean isOwner(String googleId)
+    public static void updateIsOwner(final SharedPreferences preference)
     {
-        Set<String> ownersGid = mPreferences.getStringSet(Accounts.OWNERS_GOOGLE_IDS, new HashSet<String>());
-        for (String gId : ownersGid)
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(Accounts.OWNERS);
+        Log.d(TAG, "databaseReference : " + databaseReference);
+        databaseReference.addValueEventListener(new ValueEventListener()
         {
-            if (googleId.equals(gId))
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
             {
-                return true;
+                try
+                {
+                    Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                    boolean isOwner = false;
+                    for (DataSnapshot snapshot : children)
+                    {
+                        String googleId = "";
+                        try
+                        {
+                            googleId = snapshot.getValue(String.class);
+                        }
+                        catch (Exception e)
+                        {
+                            return;
+                        }
+                        if (preference.getString(Accounts.GOOGLE_ID, "").equals(googleId))
+                        {
+                            isOwner = true;
+                        }
+                    }
+                    preference.edit().putBoolean(Accounts.IS_OWNER, isOwner).apply();
+                    Otto.post(OWNER_PROFILE_UPDATED);
+                }
+                catch (Exception e)
+                {
+                    Log.d("Exception", e.getMessage());
+                }
             }
-        }
-        return false;
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 }

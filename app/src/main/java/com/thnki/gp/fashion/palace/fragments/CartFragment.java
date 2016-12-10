@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,11 +24,10 @@ import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
 import com.thnki.gp.fashion.palace.adapters.CartAdapter;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.Addresses;
-import com.thnki.gp.fashion.palace.firebase.database.models.NotificationModel;
-import com.thnki.gp.fashion.palace.firebase.database.models.Order;
-import com.thnki.gp.fashion.palace.interfaces.ResultListener;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Addresses;
+import com.thnki.gp.fashion.palace.models.NotificationModel;
+import com.thnki.gp.fashion.palace.models.Order;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.NotificationsUtil;
@@ -41,7 +39,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.thnki.gp.fashion.palace.Brandfever.toast;
-import static com.thnki.gp.fashion.palace.firebase.database.models.Accounts.ADDRESS_LIST;
+import static com.thnki.gp.fashion.palace.models.Accounts.ADDRESS_LIST;
 
 //Todo
 
@@ -278,22 +276,9 @@ public class CartFragment extends Fragment
         {
             if (mAddress != null)
             {
-                Log.d(TAG, "submitOrder");
+                Log.d("NotificationFlow", "submitOrder");
                 saveOrderInDb();
-                NotificationsUtil.getInstance().sendNotificationToAll(getNotification(), mGoogleId, new ResultListener<String>()
-                {
-                    @Override
-                    public void onSuccess(String result)
-                    {
-                        Log.d(TAG, "Response : " + result);
-                    }
-
-                    @Override
-                    public void onError(VolleyError error)
-                    {
-                        Log.d(TAG, "Response error : " + error.getMessage());
-                    }
-                });
+                NotificationsUtil.getInstance().sendNotificationToAll(getNotification(), mGoogleId);
                 toast(R.string.orderPlaced);
                 ((StoreActivity) getActivity()).showUserOrdersFragment(mPreferences.getString(Accounts.GOOGLE_ID, ""));
             }

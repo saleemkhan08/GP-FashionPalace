@@ -11,7 +11,7 @@ import com.google.firebase.database.Query;
 
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.view.holders.AccountsViewHolder;
 

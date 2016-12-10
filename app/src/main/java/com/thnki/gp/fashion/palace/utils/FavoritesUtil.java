@@ -10,9 +10,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.thnki.gp.fashion.palace.Brandfever;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.FavoriteProduct;
-import com.thnki.gp.fashion.palace.firebase.database.models.Products;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.FavoriteProduct;
+import com.thnki.gp.fashion.palace.models.Products;
 
 public class FavoritesUtil
 {

@@ -13,15 +13,13 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.NotificationModel;
-import com.thnki.gp.fashion.palace.firebase.database.models.Order;
-import com.thnki.gp.fashion.palace.interfaces.ResultListener;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.NotificationModel;
+import com.thnki.gp.fashion.palace.models.Order;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
@@ -134,6 +132,7 @@ public class NotificationDialogFragment extends DialogFragment
     @OnClick(R.id.sendNotificationButton)
     public void sendNotification()
     {
+        Log.d("NotificationFlow", "NotificationDialog sendNotification");
         if (ConnectivityUtil.isConnected())
         {
             NotificationModel model = new NotificationModel();
@@ -148,7 +147,7 @@ public class NotificationDialogFragment extends DialogFragment
                 mOrderDbRef.child(Order.TIME_STAMP).setValue(-System.currentTimeMillis());
 
                 model.action = mOrder.getOrderStatus();
-                Log.d("OrderStatus", "SendNotification : "+model.action);
+                Log.d("NotificationFlow", "NotificationDialog action : "+model.action);
                 model.googleId = mPreference.getString(Accounts.GOOGLE_ID, "");
                 model.timeStamp = -System.currentTimeMillis();
                 NotificationsUtil notificationsUtil = NotificationsUtil.getInstance();
@@ -163,20 +162,7 @@ public class NotificationDialogFragment extends DialogFragment
                     model.photoUrl = mPreference.getString(Accounts.PHOTO_URL, "");
                     mGoogleId = null;
                 }
-                notificationsUtil.sendNotificationToAll(model, mGoogleId, new ResultListener<String>()
-                {
-                    @Override
-                    public void onSuccess(String result)
-                    {
-                        Log.d("notificationsUtil","Response result : "+result);
-                    }
-
-                    @Override
-                    public void onError(VolleyError error)
-                    {
-                        Log.d("notificationsUtil","Response error : "+error);
-                    }
-                });
+                notificationsUtil.sendNotificationToAll(model, mGoogleId);
                 toast(R.string.sent);
                 dismiss();
             }

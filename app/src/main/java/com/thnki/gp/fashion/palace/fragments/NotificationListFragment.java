@@ -20,8 +20,8 @@ import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
 import com.thnki.gp.fashion.palace.adapters.NotificationsAdapter;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.NotificationModel;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.NotificationModel;
 import com.thnki.gp.fashion.palace.utils.NotificationsUtil;
 import com.thnki.gp.fashion.palace.view.holders.NotificationViewHolder;
 
@@ -101,7 +101,6 @@ public class NotificationListFragment extends Fragment
             {
                 NotificationModel model = snapshot.getValue(NotificationModel.class);
                 model.isRead = true;
-                model.isNotified = true;
                 mNotificationsDbRef.child(snapshot.getKey()).setValue(model);
             }
         }

@@ -26,8 +26,8 @@ import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.adapters.SectionsPagerAdapter;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.Products;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.ImageUtil;
@@ -41,8 +41,8 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
 import static com.thnki.gp.fashion.palace.Brandfever.toast;
-import static com.thnki.gp.fashion.palace.firebase.database.models.Products.PHOTO_NAME;
-import static com.thnki.gp.fashion.palace.firebase.database.models.Products.PHOTO_URL;
+import static com.thnki.gp.fashion.palace.models.Products.PHOTO_NAME;
+import static com.thnki.gp.fashion.palace.models.Products.PHOTO_URL;
 import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.PICK_IMAGE_MULTIPLE;
 
 public class ProductPagerFragment extends Fragment implements ViewPager.OnPageChangeListener

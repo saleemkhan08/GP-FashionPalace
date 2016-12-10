@@ -1,6 +1,7 @@
 package com.thnki.gp.fashion.palace;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -11,31 +12,35 @@ import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
+import com.thnki.gp.fashion.palace.services.NotificationListenerService;
 
 public class Brandfever extends MultiDexApplication
 {
     public static String APP_NAME_FULL = "";
     private static Context context;
+
     @Override
     public void onCreate()
     {
         super.onCreate();
         context = this.getApplicationContext();
 
-        if(!FirebaseApp.getApps(this).isEmpty())
+        if (!FirebaseApp.getApps(this).isEmpty())
         {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         }
         APP_NAME_FULL = context.getString(R.string.app_name);
+        Log.d(NotificationListenerService.TAG, "onApplicationCreated");
+        context.startService(new Intent(context, NotificationListenerService.class));
     }
 
     @Override
     public void onTerminate()
     {
         super.onTerminate();
-        if(Build.VERSION.SDK_INT > 23)
+        if (Build.VERSION.SDK_INT > 23)
         {
-            Log.d("ConnectivityListener", "un - Registered" );
+            Log.d("ConnectivityListener", "un - Registered");
         }
     }
 
@@ -53,10 +58,12 @@ public class Brandfever extends MultiDexApplication
     {
         Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
     }
+
     public static Typeface getTypeFace()
     {
         return Typeface.createFromAsset(context.getAssets(), "Gabriola.ttf");
     }
+
     public static Context getAppContext()
     {
         return context;

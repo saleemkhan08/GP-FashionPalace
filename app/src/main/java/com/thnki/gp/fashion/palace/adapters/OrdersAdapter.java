@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +21,9 @@ import com.google.firebase.database.Query;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.ProductActivity;
 import com.thnki.gp.fashion.palace.R;
-import com.thnki.gp.fashion.palace.firebase.database.models.Accounts;
-import com.thnki.gp.fashion.palace.firebase.database.models.Order;
-import com.thnki.gp.fashion.palace.firebase.database.models.Products;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Order;
+import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.fragments.NotificationDialogFragment;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.OrdersUtil;
@@ -243,6 +244,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
 
     private void sendNotification(Order model, int msgResourceId, String status)
     {
+        Log.d("NotificationFlow", "OrdersAdapter sendNotification");
         model.setOrderStatus(status);
         NotificationDialogFragment fragment = NotificationDialogFragment.getInstance(
                 model, mGoogleId, msgResourceId);

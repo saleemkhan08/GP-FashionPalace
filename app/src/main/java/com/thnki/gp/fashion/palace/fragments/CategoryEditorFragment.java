@@ -23,7 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
-import com.thnki.gp.fashion.palace.firebase.database.models.Category;
+import com.thnki.gp.fashion.palace.models.Category;
 import com.thnki.gp.fashion.palace.interfaces.Const;
 import com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener;
 import com.thnki.gp.fashion.palace.singletons.Otto;
