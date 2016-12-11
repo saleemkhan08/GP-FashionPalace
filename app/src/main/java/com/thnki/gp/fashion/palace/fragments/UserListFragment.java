@@ -2,6 +2,7 @@ package com.thnki.gp.fashion.palace.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,31 @@ public class UserListFragment extends Fragment
     {
         View parent = inflater.inflate(R.layout.fragment_user_list, container, false);
         ButterKnife.bind(this, parent);
+        return parent;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        Activity activity = getActivity();
+        if (activity instanceof StoreActivity)
+        {
+            ((StoreActivity) activity).setToolBarTitle(getString(R.string.customerList));
+        }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                setUpRecyclerView();
+            }
+        }, 100);
+    }
+
+    private void setUpRecyclerView()
+    {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         DatabaseReference mUserDbRef = rootRef.child(UserUtil.USER_LIST);
         FirebaseRecyclerAdapter<Accounts, AccountsViewHolder> mAdapter = UsersAdapter.getInstance(mUserDbRef, getActivity());
@@ -73,17 +99,5 @@ public class UserListFragment extends Fragment
 
             }
         });
-        return parent;
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        Activity activity = getActivity();
-        if (activity instanceof StoreActivity)
-        {
-            ((StoreActivity) activity).setToolBarTitle(getString(R.string.customerList));
-        }
     }
 }

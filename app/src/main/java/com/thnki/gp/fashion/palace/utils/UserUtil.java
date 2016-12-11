@@ -15,6 +15,8 @@ import com.thnki.gp.fashion.palace.LoginActivity;
 import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 
+import java.util.HashSet;
+
 import static com.thnki.gp.fashion.palace.StoreActivity.OWNER_PROFILE_UPDATED;
 import static com.thnki.gp.fashion.palace.models.Accounts.USERS;
 import static com.thnki.gp.fashion.palace.singletons.VolleyUtil.APP_ID;
@@ -131,6 +133,7 @@ public class UserUtil
             {
                 try
                 {
+                    HashSet<String> gIdSet = new HashSet<>();
                     Iterable<DataSnapshot> children = dataSnapshot.getChildren();
                     boolean isOwner = false;
                     for (DataSnapshot snapshot : children)
@@ -139,6 +142,7 @@ public class UserUtil
                         try
                         {
                             googleId = snapshot.getValue(String.class);
+                            gIdSet.add(googleId);
                         }
                         catch (Exception e)
                         {
@@ -149,7 +153,9 @@ public class UserUtil
                             isOwner = true;
                         }
                     }
-                    preference.edit().putBoolean(Accounts.IS_OWNER, isOwner).apply();
+                    preference.edit()
+                            .putStringSet(Accounts.OWNERS_GOOGLE_IDS, gIdSet)
+                            .putBoolean(Accounts.IS_OWNER, isOwner).apply();
                     Otto.post(OWNER_PROFILE_UPDATED);
                 }
                 catch (Exception e)

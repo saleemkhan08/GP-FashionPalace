@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,7 +52,6 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
 import static com.thnki.gp.fashion.palace.Brandfever.getResString;
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.StoreActivity.RESTART_ACTIVITY;
 import static com.thnki.gp.fashion.palace.interfaces.Const.AVAILABLE_;
 
@@ -195,7 +193,7 @@ public class ProductsFragment extends Fragment
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 
@@ -262,18 +260,18 @@ public class ProductsFragment extends Fragment
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
             else
             {
-                toast("You haven't picked Image");
+                Otto.post(R.string.youHaventPickedAnImage);
             }
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            toast("Something went wrong");
+            Otto.post(R.string.something_went_wrong);
         }
     }
 
@@ -360,7 +358,7 @@ public class ProductsFragment extends Fragment
                 public void onFailure(@NonNull Exception e)
                 {
                     mProgressDialog.dismiss();
-                    toast(R.string.please_try_again);
+                    Otto.post(R.string.please_try_again);
                     product.removeValue();
                 }
             });
@@ -437,9 +435,7 @@ public class ProductsFragment extends Fragment
                  * get the zeroth item to display in the list.
                  */
                 String imageUrl = model.getPhotoUrlList().get(0);
-                Glide.with(mActivity).load(imageUrl)
-                        .asBitmap().placeholder(R.mipmap.price_tag)
-                        .centerCrop().into(viewHolder.mImageView);
+                ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
 
                 viewHolder.mBrand.setText(model.getBrand());
                 viewHolder.mPriceAfter.setText(model.getPriceAfter());
@@ -479,7 +475,7 @@ public class ProductsFragment extends Fragment
                         }
                         else
                         {
-                            toast(R.string.noInternet);
+                            Otto.post(R.string.noInternet);
                         }
                     }
                 });

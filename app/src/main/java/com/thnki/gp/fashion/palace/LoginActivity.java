@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +35,9 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.interfaces.ConnectivityListener;
+import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
@@ -41,6 +45,9 @@ import com.thnki.gp.fashion.palace.utils.UserUtil;
 
 import butterknife.BindColor;
 import butterknife.ButterKnife;
+
+import static android.view.Gravity.CENTER;
+import static android.view.Gravity.CENTER_HORIZONTAL;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, ConnectivityListener
 {
@@ -65,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
+        Otto.register(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
             getWindow().setStatusBarColor(COLOR_PRIMARY_DARK);
@@ -92,7 +100,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
 
-
     private void checkGooglePlayServices()
     {
         Log.d(TAG, "checkGooglePlayServices");
@@ -108,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
         else
         {
-            Brandfever.toast(api.getErrorString(code));
+            snack(api.getErrorString(code));
         }
     }
 
@@ -232,7 +239,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void loginFailed()
     {
         hideProgressDialog();
-        Brandfever.toast(getString(R.string.please_try_again));
+        snack(R.string.please_try_again);
         signOut();
         revokeAccess();
 
@@ -314,6 +321,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onDestroy()
     {
         super.onDestroy();
+        Otto.unregister(this);
         hideProgressDialog();
     }
 
@@ -352,5 +360,36 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         // ...
                     }
                 });
+    }
+
+    @Subscribe
+    public void snack(Integer resId)
+    {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT);
+        Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
+        layout.setGravity(CENTER);
+
+        TextView textView = (TextView) layout.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setGravity(CENTER_HORIZONTAL);
+        textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        layout.setBackgroundResource(R.color.colorAccent);
+        snackbar.show();
+    }
+
+    public void snack(String msg)
+    {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
+        layout.setGravity(CENTER);
+
+        TextView textView = (TextView) layout.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setGravity(CENTER_HORIZONTAL);
+        textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        layout.setBackgroundResource(R.color.colorAccent);
+        snackbar.show();
     }
 }

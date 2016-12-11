@@ -2,11 +2,8 @@ package com.thnki.gp.fashion.palace.fragments;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,10 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,13 +24,14 @@ import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
+import com.thnki.gp.fashion.palace.interfaces.Const;
+import com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener;
 import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.Category;
 import com.thnki.gp.fashion.palace.models.NotificationModel;
-import com.thnki.gp.fashion.palace.interfaces.Const;
-import com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
+import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.utils.NotificationsUtil;
 import com.thnki.gp.fashion.palace.view.holders.DrawerCategoryViewHolder;
 
@@ -47,7 +42,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.interfaces.Const.AVAILABLE_;
 import static com.thnki.gp.fashion.palace.interfaces.Const.CATEGORY_ID;
 import static com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener.ENTER;
@@ -100,7 +94,6 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     private DrawerItemClickListener mItemClickListener;
 
     private Resources mResources;
-    private RecyclerView.Adapter mAdapter;
 
     public static CategoryDrawerFragment getInstance(String categoryChild, DrawerItemClickListener listener)
     {
@@ -117,6 +110,8 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
         setArguments(bundle);
     }
 
+    private String mCategoryChild;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -124,97 +119,10 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
         ButterKnife.bind(this, layout);
 
         Bundle bundle = getArguments();
-        String categoryChild = bundle.getString(CATEGORY_CHILD);
-        if (categoryChild == null)
+        mCategoryChild = bundle.getString(CATEGORY_CHILD);
+        if (mCategoryChild == null)
         {
             Otto.post(StoreActivity.RESTART_ACTIVITY);
-        }
-        else
-        {
-            Log.d(TAG, "categoryChild : " + categoryChild);
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            mAvailableCategoriesRef = rootRef.child(categoryChild);
-            mCurrentCategory = categoryChild;
-            mPreferences = Brandfever.getPreferences();
-            DatabaseReference notificationDbRef = rootRef.child(mPreferences.getString(Accounts.GOOGLE_ID, ""))
-                    .child(NotificationsUtil.TAG);
-            notificationDbRef.addValueEventListener(this);
-
-            mResources = getResources();
-            String parentCategory = getParentCategory(mCurrentCategory.replace(AVAILABLE_, ""));
-            mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            mAdapter = getAdapter();
-            mAvailableCategoriesRef.addChildEventListener(new ChildEventListener()
-            {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                {
-                    Log.d("OwnerUserSwitch", "onChildAdded : " + dataSnapshot);
-                    mAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s)
-                {
-                    Log.d("OwnerUserSwitch", "onChildChanged");
-                    mAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot)
-                {
-                    Log.d("OwnerUserSwitch", "onChildRemoved : " + dataSnapshot);
-                    mAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s)
-                {
-                    Log.d("OwnerUserSwitch", "onChildMoved : " + s);
-                    mAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError)
-                {
-                    Log.d("OwnerUserSwitch", "onCancelled");
-                    mAdapter.notifyDataSetChanged();
-                }
-            });
-            mCategoriesRecyclerView.setAdapter(mAdapter);
-            mFirstLevelArray = getFirstLevelArray();
-            if (parentCategory != null)
-            {
-                mIsFirstLevelCategory = false;
-                mHeaderBack.setVisibility(View.VISIBLE);
-                mHeaderProfile.setVisibility(View.GONE);
-                mCategory.setText(parentCategory);
-            }
-            else
-            {
-                mIsFirstLevelCategory = true;
-                mHeaderProfile.setVisibility(View.VISIBLE);
-                mHeaderBack.setVisibility(View.GONE);
-                String imageUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
-                if (!imageUrl.isEmpty())
-                {
-                    Glide.with(getActivity()).load(imageUrl)
-                            .asBitmap()
-                            .placeholder(R.mipmap.user_icon_accent)
-                            .centerCrop().into(new BitmapImageViewTarget(mProfilePic)
-                    {
-                        @Override
-                        protected void setResource(Bitmap resource)
-                        {
-                            RoundedBitmapDrawable circularBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(mResources, resource);
-                            circularBitmapDrawable.setCircular(true);
-                            mProfilePic.setImageDrawable(circularBitmapDrawable);
-                        }
-                    });
-                }
-                mProfileName.setText(mPreferences.getString(Accounts.NAME, LOGIN));
-            }
         }
         return layout;
     }
@@ -231,6 +139,42 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
     public void onResume()
     {
         super.onResume();
+        Log.d(TAG, "categoryChild : " + mCategoryChild);
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        mAvailableCategoriesRef = rootRef.child(mCategoryChild);
+        mCurrentCategory = mCategoryChild;
+        mPreferences = Brandfever.getPreferences();
+
+        DatabaseReference notificationDbRef = rootRef.child(mPreferences.getString(Accounts.GOOGLE_ID, ""))
+                .child(NotificationsUtil.TAG);
+        notificationDbRef.addValueEventListener(this);
+        mResources = getResources();
+
+        String parentCategory = getParentCategory(mCurrentCategory.replace(AVAILABLE_, ""));
+        mCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        RecyclerView.Adapter mAdapter = getAdapter();
+        mCategoriesRecyclerView.setAdapter(mAdapter);
+        mFirstLevelArray = getFirstLevelArray();
+
+        if (parentCategory != null)
+        {
+            mIsFirstLevelCategory = false;
+            mHeaderBack.setVisibility(View.VISIBLE);
+            mHeaderProfile.setVisibility(View.GONE);
+            mCategory.setText(parentCategory);
+        }
+        else
+        {
+            mIsFirstLevelCategory = true;
+            mHeaderProfile.setVisibility(View.VISIBLE);
+            mHeaderBack.setVisibility(View.GONE);
+            String imageUrl = mPreferences.getString(Accounts.PHOTO_URL, "");
+            if (!imageUrl.isEmpty())
+            {
+                ImageUtil.displayRoundedImage(imageUrl, R.mipmap.user_icon_accent, mProfilePic);
+            }
+            mProfileName.setText(mPreferences.getString(Accounts.NAME, LOGIN));
+        }
         updateOwnerProfile(StoreActivity.OWNER_PROFILE_UPDATED);
     }
 
@@ -303,18 +247,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
                 String imageUrl = model.getCategoryImage();
                 if (imageUrl != null && !imageUrl.isEmpty() && mIsFirstLevelCategory)
                 {
-                    Glide.with(getActivity()).load(imageUrl)
-                            .asBitmap().centerCrop().into(new BitmapImageViewTarget(viewHolder.mImageView)
-                    {
-                        @Override
-                        protected void setResource(Bitmap resource)
-                        {
-                            RoundedBitmapDrawable circularBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(mResources, resource);
-                            circularBitmapDrawable.setCircular(true);
-                            viewHolder.mImageView.setImageDrawable(circularBitmapDrawable);
-                        }
-                    });
+                    ImageUtil.displayRoundedImage(imageUrl, viewHolder.mImageView);
                 }
                 else
                 {
@@ -343,7 +276,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
                         }
                         else
                         {
-                            toast(R.string.noInternet);
+                            Otto.post(R.string.noInternet);
                         }
                     }
                 });
@@ -373,7 +306,7 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 

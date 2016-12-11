@@ -22,7 +22,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.adapters.SectionsPagerAdapter;
@@ -41,9 +40,9 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
 import static com.thnki.gp.fashion.palace.Brandfever.toast;
+import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.PICK_IMAGE_MULTIPLE;
 import static com.thnki.gp.fashion.palace.models.Products.PHOTO_NAME;
 import static com.thnki.gp.fashion.palace.models.Products.PHOTO_URL;
-import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.PICK_IMAGE_MULTIPLE;
 
 public class ProductPagerFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
@@ -89,7 +88,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         mPhotoNameList = product.getPhotoNameList();
         if (mPhotoUrlList == null)
         {
-            toast(R.string.productNotAvailable);
+            Otto.post(R.string.productNotAvailable);
             getActivity().finish();
         }
     }
@@ -110,21 +109,13 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         return parentView;
     }
 
-    @Subscribe
-    public void showViewPager(String action)
-    {
-        if (action.equals(SquareImagePagerFragment.IMAGE_LOADED))
-        {
-            mProductImagePager.setVisibility(View.VISIBLE);
-        }
-    }
-
     private void updateEditingOptionsUi()
     {
         if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
         {
             mDeletePhotoImageView.setVisibility(View.VISIBLE);
             mUploadPhotoImageView.setVisibility(View.VISIBLE);
+            mProductImagePager.setVisibility(View.VISIBLE);
         }
     }
 
@@ -166,7 +157,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 {
                     try
                     {
-                        Log.d("PhotoUploadFlow", "onSuccess" );
+                        Log.d("PhotoUploadFlow", "onSuccess");
                         updateProgressDialog(taskSnapshot, currentSize,
                                 photoName, noOfUploadingPhoto);
                         if (destFile != null && destFile.exists())
@@ -176,7 +167,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                     }
                     catch (Exception e)
                     {
-                        Log.d("PhotoUploadFlow", "Exception " +e.getMessage());
+                        Log.d("PhotoUploadFlow", "Exception " + e.getMessage());
                     }
                 }
             }).addOnFailureListener(new OnFailureListener()
@@ -185,8 +176,8 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 public void onFailure(@NonNull Exception e)
                 {
                     mProgressDialog.dismiss();
-                    Log.d("PhotoUploadFlow", "onFailure" );
-                    toast(R.string.please_try_again);
+                    Log.d("PhotoUploadFlow", "onFailure");
+                    Otto.post(R.string.please_try_again);
                 }
             });
         }
@@ -195,7 +186,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     private void updateProgressDialog(UploadTask.TaskSnapshot taskSnapshot, int currentSize,
                                       String photoName, int noOfUploadingPhoto)
     {
-        Log.d("PhotoUploadFlow", "updateProgressDialog" );
+        Log.d("PhotoUploadFlow", "updateProgressDialog");
         Uri downloadUri = taskSnapshot.getDownloadUrl();
         int listSize = mPhotoUrlList.size();
         int size = listSize - currentSize + 1;
@@ -262,7 +253,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
             public void onCancel(DialogInterface dialogInterface)
             {
                 mIsCancelled = true;
-                toast(R.string.photosWillBeUploadedInBackground);
+                Otto.post(R.string.photosWillBeUploadedInBackground);
                 mProgressDialog.dismiss();
             }
         });
@@ -315,12 +306,12 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
             }
             else
             {
-                toast(R.string.youCannotDeleteAllTheImages);
+                Otto.post(R.string.youCannotDeleteAllTheImages);
             }
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 
@@ -337,7 +328,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 
@@ -440,17 +431,17 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
             else
             {
-                Brandfever.toast("You haven't picked Image");
+                Otto.post(R.string.youHaventPickedAnImage);
             }
         }
         catch (Exception e)
         {
-            Brandfever.toast("Something went wrong");
+            Otto.post(R.string.something_went_wrong);
             e.printStackTrace();
             mProgressDialog.dismiss();
         }

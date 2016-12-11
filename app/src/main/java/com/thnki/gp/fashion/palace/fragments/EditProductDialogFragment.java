@@ -16,8 +16,8 @@ import android.widget.ScrollView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.thnki.gp.fashion.palace.R;
-import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.interfaces.Const;
+import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 
@@ -26,8 +26,6 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 
 public class EditProductDialogFragment extends DialogFragment implements Const
 {
@@ -124,7 +122,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                     String text = mBrandName.getText().toString().trim();
                     if (text.isEmpty())
                     {
-                        toast(R.string.pleaseEnterValidBrandName);
+                        Otto.post(R.string.pleaseEnterValidBrandName);
                         scrollToRow(mBrandName);
                     }
                     else
@@ -173,7 +171,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 
@@ -192,23 +190,23 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                 }
                 catch (NumberFormatException e)
                 {
-                    toast(R.string.pleaseEnterAWholeNumber);
+                    Otto.post(R.string.pleaseEnterAWholeNumber);
                     scrollToRow(editText);
                     return -3;
                 }
             }
             if (isSize)
             {
-                toast(R.string.pleaseEnterAValidNumber);
+                Otto.post(R.string.pleaseEnterAValidNumber);
             }
             else
             {
-                toast(R.string.pleaseEnterAValidPrice);
+                Otto.post(R.string.pleaseEnterAValidPrice);
             }
             scrollToRow(editText);
             return -2;
         }
-        toast(R.string.please_try_again);
+        Otto.post(R.string.please_try_again);
         scrollToRow(editText);
         return -1;
     }

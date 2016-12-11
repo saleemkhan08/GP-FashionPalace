@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -18,12 +17,13 @@ import com.thnki.gp.fashion.palace.ProductActivity;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.models.Order;
 import com.thnki.gp.fashion.palace.models.Products;
+import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
+import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.view.holders.CartListProductViewHolder;
 
 import static com.thnki.gp.fashion.palace.Brandfever.getResString;
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 
 public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductViewHolder>
 {
@@ -49,10 +49,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductV
          * get the zeroth item to display in the list.
          */
         String imageUrl = model.getPhotoUrl();
-        Glide.with(mActivity).load(imageUrl)
-                .asBitmap().placeholder(R.mipmap.price_tag)
-                .centerCrop().into(viewHolder.mImageView);
-
+        ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
         viewHolder.mProductSize.setText(getResString(R.string.size) + " " + model.getSelectedSize());
@@ -123,7 +120,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductV
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
         });
@@ -138,7 +135,7 @@ public class CartAdapter extends FirebaseRecyclerAdapter<Order, CartListProductV
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
         });

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.thnki.gp.fashion.palace.Brandfever;
@@ -50,30 +51,61 @@ public class ImageUtil
         mActivity = activity;
     }
 
-    public void displayRoundedImage(String photo_url, final ImageView imageView)
+    public static void displayRoundedImage(String photo_url, final ImageView imageView)
     {
-        Glide.with(mActivity)
+        displayRoundedImage(photo_url, R.mipmap.price_tag, imageView);
+    }
+
+    public static void displayRoundedImage(String photo_url, int placeHolder, final ImageView imageView)
+    {
+        Glide.with(imageView.getContext())
                 .load(photo_url)
                 .asBitmap()
-                .placeholder(R.mipmap.user_icon_accent)
-                .centerCrop()
+                .placeholder(placeHolder)
+
                 .into(new BitmapImageViewTarget(imageView)
                 {
                     @Override
                     protected void setResource(Bitmap resource)
                     {
                         RoundedBitmapDrawable circularBitmapDrawable =
-                                RoundedBitmapDrawableFactory.create(mActivity.getResources(), resource);
+                                RoundedBitmapDrawableFactory.create(imageView.getContext().getResources(), resource);
                         circularBitmapDrawable.setCircular(true);
                         imageView.setImageDrawable(circularBitmapDrawable);
                     }
                 });
     }
 
-    public void displayImage(String photo_url, ImageView view)
+    public static void displayImage(int resId, ImageView view)
     {
-        GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(view);
-        Glide.with(mActivity).load(photo_url).crossFade().into(imageViewTarget);
+        Glide.with(view.getContext()).load(resId)
+                .asBitmap()
+                .into(view);
+    }
+
+    public static void displayImage(String url, ImageView view)
+    {
+        displayImage(url, R.mipmap.price_tag, view);
+    }
+
+    public static void displayImage(String url, ImageView view, Priority priority)
+    {
+        displayImage(url, R.mipmap.price_tag, view, priority);
+    }
+
+    public static void displayImage(String url, int placeHolder, ImageView view)
+    {
+        displayImage(url, placeHolder, view, Priority.NORMAL);
+    }
+
+    public static void displayImage(String url, int placeHolder, ImageView view, Priority priority)
+    {
+        Glide.with(view.getContext()).load(url)
+                .crossFade()
+                .centerCrop()
+                .placeholder(placeHolder)
+                .priority(priority)
+                .into(view);
     }
 
     public void displayGif(int photo_url_resource, ImageView view)
@@ -175,7 +207,7 @@ public class ImageUtil
             // factor of downsizing the image
 
             InputStream inputStream = Brandfever.getAppContext().getContentResolver().openInputStream(uri);
-            Log.d("SizeReduction", "destFile : "+inputStream);
+            Log.d("SizeReduction", "destFile : " + inputStream);
             //Bitmap selectedBitmap = null;
             BitmapFactory.decodeStream(inputStream, null, options);
             inputStream.close();
@@ -199,10 +231,10 @@ public class ImageUtil
             Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, options2);
             inputStream.close();
 
-            File destFile = new File(STORAGE_PATH + key+".jpg");
+            File destFile = new File(STORAGE_PATH + key + ".jpg");
             File storageDir = new File(STORAGE_PATH);
-            Log.d("SizeReduction", "storageDir : "+storageDir);
-            Log.d("SizeReduction", "destFile : "+destFile);
+            Log.d("SizeReduction", "storageDir : " + storageDir);
+            Log.d("SizeReduction", "destFile : " + destFile);
 
             if (!destFile.exists())
             {
@@ -228,10 +260,12 @@ public class ImageUtil
             }
             // here i override the original image file
             FileOutputStream outputStream = new FileOutputStream(destFile);
-            if(selectedBitmap.getAllocationByteCount() > 200000)
+            if (selectedBitmap.getAllocationByteCount() > 200000)
             {
                 selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
-            }else{
+            }
+            else
+            {
                 selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             }
             return destFile;
@@ -239,7 +273,7 @@ public class ImageUtil
         catch (Exception e)
         {
             e.printStackTrace();
-            Log.d("SizeReduction", "saveFile : "+e.getMessage());
+            Log.d("SizeReduction", "saveFile : " + e.getMessage());
             return null;
         }
     }

@@ -2,6 +2,7 @@ package com.thnki.gp.fashion.palace.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,7 +41,7 @@ public class NotificationListFragment extends Fragment
     View mNoNotificationsFoundContainer;
 
     public static final String TAG = "NotificationListFragmnt";
-    private FirebaseRecyclerAdapter<NotificationModel, NotificationViewHolder> mAdapter;
+    private NotificationsAdapter mAdapter;
     private String mGoogleId;
     private DatabaseReference mNotificationsDbRef;
     private boolean mIsNotificationFragmentShown;
@@ -59,6 +60,47 @@ public class NotificationListFragment extends Fragment
         Log.d(TAG, "onCreateView");
         View parent = inflater.inflate(R.layout.fragment_notifiaction_list, container, false);
         ButterKnife.bind(this, parent);
+        return parent;
+    }
+
+    private void updateNotificationReadStatus(DataSnapshot dataSnapshot)
+    {
+        if (mIsNotificationFragmentShown)
+        {
+            Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
+            for (DataSnapshot snapshot : snapshots)
+            {
+                NotificationModel model = snapshot.getValue(NotificationModel.class);
+                model.isRead = true;
+                mNotificationsDbRef.child(snapshot.getKey()).setValue(model);
+            }
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        Activity activity = getActivity();
+        if (activity instanceof StoreActivity)
+        {
+            ((StoreActivity) activity).setToolBarTitle(getString(R.string.notifications));
+        }
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                setupRecyclerView();
+            }
+        }, 100);
+
+    }
+
+    private void setupRecyclerView()
+    {
         mNotificationsDbRef = FirebaseDatabase.getInstance().getReference()
                 .child(mGoogleId).child(NotificationsUtil.TAG);
 
@@ -89,32 +131,6 @@ public class NotificationListFragment extends Fragment
 
             }
         });
-        return parent;
-    }
-
-    private void updateNotificationReadStatus(DataSnapshot dataSnapshot)
-    {
-        if (mIsNotificationFragmentShown)
-        {
-            Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
-            for (DataSnapshot snapshot : snapshots)
-            {
-                NotificationModel model = snapshot.getValue(NotificationModel.class);
-                model.isRead = true;
-                mNotificationsDbRef.child(snapshot.getKey()).setValue(model);
-            }
-        }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        Activity activity = getActivity();
-        if (activity instanceof StoreActivity)
-        {
-            ((StoreActivity) activity).setToolBarTitle(getString(R.string.notifications));
-        }
     }
 
     private void updateUi()
@@ -138,5 +154,6 @@ public class NotificationListFragment extends Fragment
     {
         super.onStop();
         mIsNotificationFragmentShown = false;
+        mAdapter.unregister();
     }
 }

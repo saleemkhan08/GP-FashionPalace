@@ -6,11 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -55,7 +57,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
+import static android.view.Gravity.CENTER;
+import static android.view.Gravity.CENTER_HORIZONTAL;
 import static com.thnki.gp.fashion.palace.LoginActivity.LOGIN_STATUS;
 import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.REQUEST_CODE_SDCARD_PERMISSION;
 import static com.thnki.gp.fashion.palace.interfaces.Const.AVAILABLE_FIRST_LEVEL_CATEGORIES;
@@ -71,6 +74,9 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
     public static final String RESTART_ACTIVITY = "restartActivity";
     public static final String ON_REQUEST_PERMISSION_RESULT = "onRequestPermissionResult";
     public static final String LOG_OUT = "logOut";
+    public static final String SHOW_DELETE_ICON = "showDeleteIcon";
+    public static final String HIDE_DELETE_ICON = "hideDeleteIcon";
+    public static final String DELETE_ICON_CLICKED = "deleteIconClicked";
 
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
@@ -86,6 +92,15 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Bind(R.id.favCount)
     TextView mFavCount;
+
+    @Bind(R.id.cart)
+    View mCartIcon;
+
+    @Bind(R.id.favorite)
+    View mFavIcon;
+
+    @Bind(R.id.deleteIcon)
+    View mDeleteIcon;
 
     private String mCurrentFragment = "";
     private String mGoogleId;
@@ -291,76 +306,79 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
 
     public void logout(View view)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.areYouSureYouWantToLogout);
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+        mNavigationDrawerUtil.closeDrawer();
+        if (ConnectivityUtil.isConnected())
         {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.areYouSureYouWantToLogout);
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
             {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
 
-            }
-        }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
+                }
+            }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
             {
-                logout();
-            }
-        }).show();
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    logout();
+                }
+            }).show();
+        }
+        else
+        {
+            snack(R.string.noInternet);
+        }
     }
 
     public void logout()
     {
-        if (ConnectivityUtil.isConnected())
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(getString(R.string.loggingOut));
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
         {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.loggingOut));
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
+
+                // Build GoogleAPIClient with the Google Sign-In API and the above options.
+                mGoogleApiClient = new GoogleApiClient.Builder(StoreActivity.this)
+                        .enableAutoManage(StoreActivity.this, StoreActivity.this)
+                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                        .build();
+
+                mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks()
                 {
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.default_web_client_id))
-                            .requestEmail()
-                            .build();
-
-                    // Build GoogleAPIClient with the Google Sign-In API and the above options.
-                    mGoogleApiClient = new GoogleApiClient.Builder(StoreActivity.this)
-                            .enableAutoManage(StoreActivity.this, StoreActivity.this)
-                            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                            .build();
-
-                    mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks()
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle)
                     {
-                        @Override
-                        public void onConnected(@Nullable Bundle bundle)
-                        {
-                            FavoritesUtil.clearInstance();
-                            CartUtil.clearInstance();
-                            revokeAccess();
-                            signOut();
-                            launchLoginActivity();
-                        }
+                        FavoritesUtil.clearInstance();
+                        CartUtil.clearInstance();
+                        revokeAccess();
+                        signOut();
+                        launchLoginActivity();
+                    }
 
-                        @Override
-                        public void onConnectionSuspended(int i)
-                        {
-                            launchLoginActivity();
-                        }
-                    });
-                }
-            }, 1000);
-        }
-        else
-        {
-            toast(R.string.noInternet);
-        }
+                    @Override
+                    public void onConnectionSuspended(int i)
+                    {
+                        launchLoginActivity();
+                    }
+                });
+            }
+        }, 1000);
     }
+
     public void forceCloseApp()
     {
         mProgressDialog.setMessage(getString(R.string.closingApplication));
@@ -538,7 +556,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         }
         else
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
         }
     }
 
@@ -588,7 +606,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         }
         else
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
         }
         return false;
     }
@@ -661,8 +679,8 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
             }
             else
             {
-                toast(R.string.permissionRequiredToUploadPhotos);
-                toast(R.string.please_try_again);
+                snack(R.string.permissionRequiredToUploadPhotos);
+                snack(R.string.please_try_again);
             }
         }
     }
@@ -681,5 +699,54 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         return (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) &&
                 (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    @Subscribe
+    public void showDeleteIcon(String action)
+    {
+        if (action.equals(SHOW_DELETE_ICON))
+        {
+            mFavCount.setVisibility(View.GONE);
+            mCartCount.setVisibility(View.GONE);
+            mCartIcon.setVisibility(View.GONE);
+            mFavIcon.setVisibility(View.GONE);
+            mDeleteIcon.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @OnClick(R.id.deleteIcon)
+    public void deleteClicked()
+    {
+        Otto.post(DELETE_ICON_CLICKED);
+        hideDeleteIcon(HIDE_DELETE_ICON);
+    }
+
+    @Subscribe
+    public void hideDeleteIcon(String action)
+    {
+        if (HIDE_DELETE_ICON.equals(action))
+        {
+            mFavCount.setVisibility(View.VISIBLE);
+            mCartCount.setVisibility(View.VISIBLE);
+            mCartIcon.setVisibility(View.VISIBLE);
+            mFavIcon.setVisibility(View.VISIBLE);
+            mDeleteIcon.setVisibility(View.GONE);
+        }
+    }
+
+    @Subscribe
+    public void snack(Integer resId)
+    {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT);
+        Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
+        layout.setGravity(CENTER);
+
+        TextView textView = (TextView) layout.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setGravity(CENTER_HORIZONTAL);
+        textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        layout.setBackgroundResource(R.color.colorPrimary);
+        snackbar.show();
     }
 }

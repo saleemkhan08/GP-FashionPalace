@@ -20,6 +20,9 @@ public class NotificationViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.notificationTypeImage)
     public ImageView mNotificationImageView;
 
+    @Bind(R.id.parentView)
+    public View mParentView;
+
     @Bind(R.id.username)
     public TextView mUsername;
 

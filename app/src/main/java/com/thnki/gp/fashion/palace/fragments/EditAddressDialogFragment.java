@@ -18,9 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
+import com.thnki.gp.fashion.palace.interfaces.Const;
 import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.Addresses;
-import com.thnki.gp.fashion.palace.interfaces.Const;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 
@@ -28,7 +28,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.models.Accounts.ADDRESS_LIST;
 import static com.thnki.gp.fashion.palace.models.Accounts.USERS;
 
@@ -146,22 +145,22 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
 
             if (mAddress.getName() == null || mAddress.getName().isEmpty())
             {
-                toast(R.string.pleaseEnterValidName);
+                Otto.post(R.string.pleaseEnterValidName);
                 mAddressName.requestFocus();
             }
             else if (mAddress.getAddress() == null || mAddress.getAddress().isEmpty())
             {
-                toast(R.string.pleaseEnterValidAddress);
+                Otto.post(R.string.pleaseEnterValidAddress);
                 mAddressText.requestFocus();
             }
             else if (mAddress.getPhoneNo() == null || mAddress.getPhoneNo().isEmpty())
             {
-                toast(R.string.pleaseEnterValidPhoneNo);
+                Otto.post(R.string.pleaseEnterValidPhoneNo);
                 mPhoneNumber.requestFocus();
             }
             else if (mAddress.getPinCode() == null || mAddress.getPinCode().isEmpty())
             {
-                toast(R.string.pleaseEnterValidPincode);
+                Otto.post(R.string.pleaseEnterValidPincode);
                 mPinCode.requestFocus();
             }
             else
@@ -180,7 +179,7 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 

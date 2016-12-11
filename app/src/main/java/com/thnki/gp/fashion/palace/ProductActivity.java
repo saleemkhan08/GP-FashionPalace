@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,14 +28,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.otto.Subscribe;
-import com.thnki.gp.fashion.palace.models.Accounts;
-import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.fragments.EditProductDialogFragment;
 import com.thnki.gp.fashion.palace.fragments.ProductPagerFragment;
+import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
+import com.thnki.gp.fashion.palace.utils.ImageUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +47,8 @@ import butterknife.BindDrawable;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
+import static android.view.Gravity.CENTER;
+import static android.view.Gravity.CENTER_HORIZONTAL;
 
 public class ProductActivity extends AppCompatActivity
 {
@@ -165,7 +168,7 @@ public class ProductActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         if (!ConnectivityUtil.isConnected())
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
             finish();
         }
         else
@@ -262,9 +265,7 @@ public class ProductActivity extends AppCompatActivity
     {
         if (mProduct.getPhotoUrlList() != null)
         {
-            Glide.with(this).load(mProduct.getPhotoUrlList().get(0))
-                    .crossFade()
-                    .centerCrop().into(mTransitionImage);
+            ImageUtil.displayImage(mProduct.getPhotoUrlList().get(0), mTransitionImage);
         }
     }
 
@@ -334,7 +335,7 @@ public class ProductActivity extends AppCompatActivity
                 @Override
                 public void run()
                 {
-                    if(mProduct != null)
+                    if (mProduct != null)
                     {
                         updateProductImagesFragment();
                         mIsPagerLoaded = true;
@@ -413,7 +414,7 @@ public class ProductActivity extends AppCompatActivity
         }
         else
         {
-            toast(R.string.sizeNotAvailable);
+            snack(R.string.sizeNotAvailable);
         }
     }
 
@@ -475,7 +476,7 @@ public class ProductActivity extends AppCompatActivity
         }
         else
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
         }
     }
 
@@ -490,17 +491,17 @@ public class ProductActivity extends AppCompatActivity
             if (selectedSize != null)
             {
                 CartUtil.getsInstance().addToCart(mProduct, selectedSize);
-                toast(R.string.addedToCart);
+                snack(R.string.addedToCart);
                 finish();
             }
             else
             {
-                toast(R.string.pleaseSelectSize);
+                snack(R.string.pleaseSelectSize);
             }
         }
         else
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
         }
     }
 
@@ -566,7 +567,7 @@ public class ProductActivity extends AppCompatActivity
         }
         else
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
         }
     }
 
@@ -608,7 +609,23 @@ public class ProductActivity extends AppCompatActivity
         }
         else
         {
-            toast(R.string.noInternet);
+            snack(R.string.noInternet);
         }
+    }
+
+    @Subscribe
+    public void snack(Integer resId)
+    {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT);
+        Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
+        layout.setGravity(CENTER);
+
+        TextView textView = (TextView) layout.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setGravity(CENTER_HORIZONTAL);
+        textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        layout.setBackgroundResource(R.color.colorPrimary);
+        snackbar.show();
     }
 }

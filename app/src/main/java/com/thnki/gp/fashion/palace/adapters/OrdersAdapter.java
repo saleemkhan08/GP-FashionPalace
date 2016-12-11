@@ -14,23 +14,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.ProductActivity;
 import com.thnki.gp.fashion.palace.R;
+import com.thnki.gp.fashion.palace.fragments.NotificationDialogFragment;
 import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.Order;
 import com.thnki.gp.fashion.palace.models.Products;
-import com.thnki.gp.fashion.palace.fragments.NotificationDialogFragment;
+import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
+import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.utils.OrdersUtil;
 import com.thnki.gp.fashion.palace.view.holders.OrderListProductViewHolder;
 
 import static com.thnki.gp.fashion.palace.Brandfever.getResString;
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 
 public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProductViewHolder>
 {
@@ -60,9 +60,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
          * get the zeroth item to display in the list.
          */
         String imageUrl = model.getPhotoUrl();
-        Glide.with(mActivity).load(imageUrl)
-                .asBitmap().placeholder(R.mipmap.price_tag)
-                .centerCrop().into(viewHolder.mImageView);
+        ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
@@ -118,7 +116,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
         });
@@ -232,7 +230,7 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
                         }
                         else
                         {
-                            toast(mActivity.getString(R.string.noInternet));
+                            Otto.post(R.string.noInternet);
                         }
                         return true;
                     }

@@ -7,7 +7,6 @@ import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -15,12 +14,13 @@ import com.thnki.gp.fashion.palace.ProductActivity;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.models.FavoriteProduct;
 import com.thnki.gp.fashion.palace.models.Products;
+import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
+import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.view.holders.WishListProductViewHolder;
 
 import static com.thnki.gp.fashion.palace.Brandfever.getResString;
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 
 public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, WishListProductViewHolder>
 {
@@ -49,9 +49,7 @@ public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, W
          */
 
         String imageUrl = model.getPhotoUrl();
-        Glide.with(mActivity).load(imageUrl)
-                .asBitmap().placeholder(R.mipmap.price_tag)
-                .centerCrop().into(viewHolder.mImageView);
+        ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());
@@ -91,7 +89,7 @@ public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, W
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
         });
@@ -107,7 +105,7 @@ public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, W
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
         });

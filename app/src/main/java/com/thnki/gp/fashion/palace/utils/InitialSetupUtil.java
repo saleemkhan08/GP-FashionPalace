@@ -13,6 +13,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
+import com.thnki.gp.fashion.palace.fragments.MainPageFragment;
 import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.Category;
 import com.thnki.gp.fashion.palace.singletons.Otto;
@@ -55,6 +56,7 @@ public class InitialSetupUtil implements ValueEventListener
 
     private void saveCategories()
     {
+        Otto.post(MainPageFragment.SHOW_PROGRESS_SPINNER);
         Log.d(TAG, "saveCategories");
         //Child 1
         DatabaseReference appDataDbRef = mRootDbRef.child(UserUtil.APP_DATA);
@@ -142,7 +144,7 @@ public class InitialSetupUtil implements ValueEventListener
             {
                 try
                 {
-                        Log.d(TAG, "saveIndividualCategory : mCategoriesRef : " + mCategoriesRef
+                    Log.d(TAG, "saveIndividualCategory : mCategoriesRef : " + mCategoriesRef
                             + ", categoryName :" + categoryName + ", childId : " + childId);
 
                     DatabaseReference childRef = mCategoriesRef.child(index + "");

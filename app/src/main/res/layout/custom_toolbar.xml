@@ -74,6 +74,17 @@
         android:padding="@dimen/toolbar_img_padding"
         android:src="@mipmap/favorite_fill_primary"/>
 
+    <com.thnki.gp.fashion.palace.view.SquareImageView
+        android:id="@+id/deleteIcon"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_accent_drawable"
+        android:clickable="true"
+        android:visibility="gone"
+        android:padding="@dimen/toolbar_img_padding"
+        android:src="@mipmap/delete_bin"/>
+
     <TextView
         android:id="@+id/favCount"
         android:layout_width="wrap_content"

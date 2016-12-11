@@ -28,6 +28,7 @@ import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.Addresses;
 import com.thnki.gp.fashion.palace.models.NotificationModel;
 import com.thnki.gp.fashion.palace.models.Order;
+import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.NotificationsUtil;
@@ -38,7 +39,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.models.Accounts.ADDRESS_LIST;
 
 //Todo
@@ -279,7 +279,7 @@ public class CartFragment extends Fragment
                 Log.d("NotificationFlow", "submitOrder");
                 saveOrderInDb();
                 NotificationsUtil.getInstance().sendNotificationToAll(getNotification(), mGoogleId);
-                toast(R.string.orderPlaced);
+                Otto.post(R.string.orderPlaced);
                 ((StoreActivity) getActivity()).showUserOrdersFragment(mPreferences.getString(Accounts.GOOGLE_ID, ""));
             }
             else
@@ -289,7 +289,7 @@ public class CartFragment extends Fragment
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 

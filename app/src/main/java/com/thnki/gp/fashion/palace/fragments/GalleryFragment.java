@@ -255,12 +255,12 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
             }
             else
             {
-                toast(R.string.youCannotDeleteAllTheImages);
+                Otto.post(R.string.youCannotDeleteAllTheImages);
             }
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 
@@ -284,7 +284,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
         }
         else
         {
-            toast(R.string.noInternet);
+            Otto.post(R.string.noInternet);
         }
     }
 
@@ -330,19 +330,22 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                 }
                 else
                 {
-                    toast(R.string.noInternet);
+                    Otto.post(R.string.noInternet);
                 }
             }
             else
             {
-                Brandfever.toast("You haven't picked Image");
+                Otto.post(R.string.youHaventPickedAnImage);
             }
         }
         catch (Exception e)
         {
-            Brandfever.toast("Something went wrong");
+            Otto.post(R.string.something_went_wrong);
             e.printStackTrace();
-            mProgressDialog.dismiss();
+            if (mProgressDialog != null)
+            {
+                mProgressDialog.dismiss();
+            }
         }
     }
 
@@ -396,7 +399,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                 {
                     mProgressDialog.dismiss();
                     Log.d("PhotoUploadFlow", "onFailure");
-                    toast(R.string.please_try_again);
+                    Otto.post(R.string.please_try_again);
                 }
             });
         }
@@ -435,7 +438,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                 }
                 else
                 {
-                    toast(R.string.uploaded);
+                    Otto.post(R.string.uploaded);
                 }
                 mGalleryImagePager.setCurrentItem(0, false);
                 mGalleryImagePager.setCurrentItem(mPhotoUrlList.size() - 1, true);
@@ -467,7 +470,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
             public void onCancel(DialogInterface dialogInterface)
             {
                 mIsCancelled = true;
-                toast(R.string.photosWillBeUploadedInBackground);
+                Otto.post(R.string.photosWillBeUploadedInBackground);
                 mProgressDialog.dismiss();
             }
         });
