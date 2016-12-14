@@ -4,9 +4,10 @@
              android:layout_height="match_parent"
              tools:context=".fragments.SquareImagePagerFragment">
 
-   <ImageView
-       android:layout_width="match_parent"
-       android:background="#ddd"
-       android:layout_height="match_parent"
-       android:id="@+id/galleryImage"/>
+    <ImageView
+        android:id="@+id/galleryImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ddd"
+        android:scaleType="centerCrop"/>
 </FrameLayout>

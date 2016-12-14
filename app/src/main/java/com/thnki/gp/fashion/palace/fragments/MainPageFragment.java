@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -127,6 +129,7 @@ public class MainPageFragment extends Fragment
     private StoreActivity mActivity;
 
     Handler mHandler = new Handler();
+    private boolean mIsRequestingPermission;
 
     public MainPageFragment()
     {
@@ -354,6 +357,7 @@ public class MainPageFragment extends Fragment
                             }
                             else
                             {
+                                mIsRequestingPermission = true;
                                 mActivity.requestSdCardPermission();
                             }
                         }
@@ -363,7 +367,8 @@ public class MainPageFragment extends Fragment
                         }
                     }
                 });
-                ImageUtil.displayImage(model.getCategoryImage(), viewHolder.mBackgroundImageView);
+                GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(viewHolder.mBackgroundImageView);
+                Glide.with(mActivity).load(model.getCategoryImage()).crossFade().into(imageViewTarget);
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener()
                 {
@@ -389,9 +394,10 @@ public class MainPageFragment extends Fragment
     @Subscribe
     public void getImages(String action)
     {
-        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT))
+        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT) && mIsRequestingPermission)
         {
             getImages();
+            mIsRequestingPermission = false;
         }
     }
 

@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +23,6 @@ import com.thnki.gp.fashion.palace.adapters.NotificationsAdapter;
 import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.NotificationModel;
 import com.thnki.gp.fashion.palace.utils.NotificationsUtil;
-import com.thnki.gp.fashion.palace.view.holders.NotificationViewHolder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

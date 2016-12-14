@@ -21,9 +21,6 @@ public class AccountsViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.userEmail)
     public TextView mUserEmail;
 
-    /*@Bind(R.id.userPhoneNo)
-    public ImageView mUserPhoneNo;*/
-
     public View mItemView;
 
     public AccountsViewHolder(View itemView)

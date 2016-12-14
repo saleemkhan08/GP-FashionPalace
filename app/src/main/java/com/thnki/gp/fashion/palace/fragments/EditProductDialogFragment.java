@@ -27,6 +27,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.thnki.gp.fashion.palace.Brandfever.toast;
+
 public class EditProductDialogFragment extends DialogFragment implements Const
 {
     private Products mProduct;
@@ -122,7 +124,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                     String text = mBrandName.getText().toString().trim();
                     if (text.isEmpty())
                     {
-                        Otto.post(R.string.pleaseEnterValidBrandName);
+                        toast(R.string.pleaseEnterValidBrandName);
                         scrollToRow(mBrandName);
                     }
                     else
@@ -171,7 +173,7 @@ public class EditProductDialogFragment extends DialogFragment implements Const
         }
         else
         {
-            Otto.post(R.string.noInternet);
+            toast(R.string.noInternet);
         }
     }
 
@@ -190,23 +192,23 @@ public class EditProductDialogFragment extends DialogFragment implements Const
                 }
                 catch (NumberFormatException e)
                 {
-                    Otto.post(R.string.pleaseEnterAWholeNumber);
+                    toast(R.string.pleaseEnterAWholeNumber);
                     scrollToRow(editText);
                     return -3;
                 }
             }
             if (isSize)
             {
-                Otto.post(R.string.pleaseEnterAValidNumber);
+                toast(R.string.pleaseEnterAValidNumber);
             }
             else
             {
-                Otto.post(R.string.pleaseEnterAValidPrice);
+                toast(R.string.pleaseEnterAValidPrice);
             }
             scrollToRow(editText);
             return -2;
         }
-        Otto.post(R.string.please_try_again);
+        toast(R.string.please_try_again);
         scrollToRow(editText);
         return -1;
     }

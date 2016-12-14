@@ -9,6 +9,7 @@ public class NotificationModel
     public String googleId;
     public String action;
     public boolean isRead;
+    public String notificationId;
     public long timeStamp;
 
     public static final String USERNAME = "username";

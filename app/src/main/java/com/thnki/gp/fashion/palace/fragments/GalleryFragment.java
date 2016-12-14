@@ -55,11 +55,11 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
 import static com.thnki.gp.fashion.palace.Brandfever.toast;
-import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.PICK_IMAGE_MULTIPLE;
 
 public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
     private static final String SHOP_GALLERY_IMAGES = "shopGallery";
+    public static final int PICK_IMAGE_MULTIPLE_GALLERY = 125;
     @Bind(R.id.galleryImagePager)
     ViewPager mGalleryImagePager;
 
@@ -91,6 +91,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
 
     private Handler mHandler = new Handler();
     private StoreActivity mActivity;
+    private boolean mIsRequestingPermission;
 
     public GalleryFragment()
     {
@@ -113,7 +114,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
     {
         super.onActivityCreated(savedInstanceState);
         mActivity = (StoreActivity) getActivity();
-        updateEditingOptionsUi();
+        updateEditingOptionsUi(StoreActivity.OWNER_PROFILE_UPDATED);
         mAdapter = new ShopGalleryPagerAdapter(mActivity.getSupportFragmentManager());
         mDbRef.addValueEventListener(new ValueEventListener()
         {
@@ -275,10 +276,11 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE_GALLERY);
             }
             else
             {
+                mIsRequestingPermission = true;
                 mActivity.requestSdCardPermission();
             }
         }
@@ -291,8 +293,9 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
     @Subscribe
     public void getImages(String action)
     {
-        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT))
+        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT) && mIsRequestingPermission)
         {
+            mIsRequestingPermission = false;
             uploadMorePhotos();
         }
     }
@@ -303,7 +306,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
         super.onActivityResult(requestCode, resultCode, data);
         try
         {
-            if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK && null != data)
+            if (requestCode == PICK_IMAGE_MULTIPLE_GALLERY && resultCode == RESULT_OK && null != data)
             {
                 ArrayList<String> mImagesEncodedList = new ArrayList<>();
                 if (data.getData() != null)
@@ -536,12 +539,22 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
         }
     }
 
-    private void updateEditingOptionsUi()
+    @Subscribe
+    public void updateEditingOptionsUi(String action)
     {
-        if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+        if (action.equals(StoreActivity.OWNER_PROFILE_UPDATED))
         {
-            mDeletePhotoImageView.setVisibility(View.VISIBLE);
-            mUploadPhotoImageView.setVisibility(View.VISIBLE);
+            Log.d("OWNER_PROFILE_UPDATED", "Action : " + action);
+            if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
+            {
+                mDeletePhotoImageView.setVisibility(View.VISIBLE);
+                mUploadPhotoImageView.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                mDeletePhotoImageView.setVisibility(View.GONE);
+                mUploadPhotoImageView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -558,6 +571,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
         mPageNum = position;
         mCurrentPhotoUrl = mAdapter.getItemUrl(position);
         mCurrentPhotoName = mPhotoNameList.get(position);
+        Log.d("FirstImageIssue", mCurrentPhotoName + " : " + mCurrentPhotoUrl + " > " + position);
     }
 
     @Override

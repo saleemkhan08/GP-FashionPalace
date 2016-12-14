@@ -1,7 +1,10 @@
 package com.thnki.gp.fashion.palace.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +27,6 @@ import com.thnki.gp.fashion.palace.interfaces.Const;
 import com.thnki.gp.fashion.palace.interfaces.DrawerItemClickListener;
 import com.thnki.gp.fashion.palace.models.Category;
 import com.thnki.gp.fashion.palace.singletons.Otto;
-import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.view.holders.DrawerCategoryEditorViewHolder;
 
 import butterknife.Bind;
@@ -168,7 +172,18 @@ public class CategoryEditorFragment extends Fragment
                 String imageUrl = model.getCategoryImage();
                 if (imageUrl != null && !imageUrl.isEmpty() && mIsFirstLevelCategory)
                 {
-                    ImageUtil.displayRoundedImage(imageUrl, viewHolder.mImageView);
+                    Glide.with(getActivity()).load(imageUrl)
+                            .asBitmap().centerCrop().into(new BitmapImageViewTarget(viewHolder.mImageView)
+                    {
+                        @Override
+                        protected void setResource(Bitmap resource)
+                        {
+                            RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(getActivity().getResources(), resource);
+                            circularBitmapDrawable.setCircular(true);
+                            viewHolder.mImageView.setImageDrawable(circularBitmapDrawable);
+                        }
+                    });
                 }
                 else
                 {

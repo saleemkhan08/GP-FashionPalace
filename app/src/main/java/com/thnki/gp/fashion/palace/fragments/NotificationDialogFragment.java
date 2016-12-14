@@ -30,6 +30,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.thnki.gp.fashion.palace.Brandfever.toast;
+
 public class NotificationDialogFragment extends DialogFragment
 {
     public static final String TAG = "EditAddressDialogFragment";
@@ -137,7 +139,7 @@ public class NotificationDialogFragment extends DialogFragment
             model.notification = mNotificationMsgEditText.getText().toString();
             if (model.notification.trim().isEmpty())
             {
-                Otto.post(R.string.pleaseEnterMessage);
+                toast(R.string.pleaseEnterMessage);
             }
             else
             {
@@ -161,13 +163,13 @@ public class NotificationDialogFragment extends DialogFragment
                     mGoogleId = null;
                 }
                 notificationsUtil.sendNotificationToAll(model, mGoogleId);
-                Otto.post(R.string.sent);
+                toast(R.string.sent);
                 dismiss();
             }
         }
         else
         {
-            Otto.post(R.string.noInternet);
+            toast(R.string.noInternet);
         }
     }
 }

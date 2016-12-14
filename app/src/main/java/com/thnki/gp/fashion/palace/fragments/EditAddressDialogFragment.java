@@ -28,6 +28,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.models.Accounts.ADDRESS_LIST;
 import static com.thnki.gp.fashion.palace.models.Accounts.USERS;
 
@@ -145,22 +146,22 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
 
             if (mAddress.getName() == null || mAddress.getName().isEmpty())
             {
-                Otto.post(R.string.pleaseEnterValidName);
+                toast(R.string.pleaseEnterValidName);
                 mAddressName.requestFocus();
             }
             else if (mAddress.getAddress() == null || mAddress.getAddress().isEmpty())
             {
-                Otto.post(R.string.pleaseEnterValidAddress);
+                toast(R.string.pleaseEnterValidAddress);
                 mAddressText.requestFocus();
             }
             else if (mAddress.getPhoneNo() == null || mAddress.getPhoneNo().isEmpty())
             {
-                Otto.post(R.string.pleaseEnterValidPhoneNo);
+                toast(R.string.pleaseEnterValidPhoneNo);
                 mPhoneNumber.requestFocus();
             }
             else if (mAddress.getPinCode() == null || mAddress.getPinCode().isEmpty())
             {
-                Otto.post(R.string.pleaseEnterValidPincode);
+                toast(R.string.pleaseEnterValidPincode);
                 mPinCode.requestFocus();
             }
             else
@@ -179,7 +180,7 @@ public class EditAddressDialogFragment extends DialogFragment implements Const
         }
         else
         {
-            Otto.post(R.string.noInternet);
+            toast(R.string.noInternet);
         }
     }
 

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +37,6 @@ import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
-import com.thnki.gp.fashion.palace.utils.ImageUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -265,7 +265,9 @@ public class ProductActivity extends AppCompatActivity
     {
         if (mProduct.getPhotoUrlList() != null)
         {
-            ImageUtil.displayImage(mProduct.getPhotoUrlList().get(0), mTransitionImage);
+            Glide.with(this).load(mProduct.getPhotoUrlList().get(0))
+                    .crossFade()
+                    .centerCrop().into(mTransitionImage);
         }
     }
 
@@ -281,7 +283,7 @@ public class ProductActivity extends AppCompatActivity
         }
     }
 
-    private void setupEditingOptionsUi()
+    public void setupEditingOptionsUi()
     {
         if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
         {
@@ -625,7 +627,7 @@ public class ProductActivity extends AppCompatActivity
         textView.setGravity(CENTER_HORIZONTAL);
         textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        layout.setBackgroundResource(R.color.colorPrimary);
+        layout.setBackgroundResource(R.color.colorAccent);
         snackbar.show();
     }
 }

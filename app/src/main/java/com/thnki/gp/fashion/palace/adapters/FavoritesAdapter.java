@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -17,7 +18,6 @@ import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
 import com.thnki.gp.fashion.palace.utils.FavoritesUtil;
-import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.view.holders.WishListProductViewHolder;
 
 import static com.thnki.gp.fashion.palace.Brandfever.getResString;
@@ -49,7 +49,9 @@ public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, W
          */
 
         String imageUrl = model.getPhotoUrl();
-        ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
+        Glide.with(mActivity).load(imageUrl)
+                .asBitmap().placeholder(R.mipmap.price_tag)
+                .centerCrop().into(viewHolder.mImageView);
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());

@@ -168,8 +168,9 @@ public class NotificationsUtil
         if (googleId != null && !googleId.equals(mPreferences.getString(Accounts.GOOGLE_ID, "")))
         {
             Log.d("NotificationFlow", "saveNotification Owner googleId : " + googleId);
-            DatabaseReference ownersNotificationDbRef = mRootDbRef.child(googleId).child(NotificationsUtil.TAG);
-            ownersNotificationDbRef.push().setValue(notificationModel);
+            DatabaseReference ownersNotificationDbRef = mRootDbRef.child(googleId).child(NotificationsUtil.TAG).push();
+            notificationModel.notificationId = ownersNotificationDbRef.getKey();
+            ownersNotificationDbRef.setValue(notificationModel);
         }
     }
 

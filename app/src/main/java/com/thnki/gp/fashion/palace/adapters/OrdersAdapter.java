@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -26,7 +27,6 @@ import com.thnki.gp.fashion.palace.models.Order;
 import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
-import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.utils.OrdersUtil;
 import com.thnki.gp.fashion.palace.view.holders.OrderListProductViewHolder;
 
@@ -60,7 +60,9 @@ public class OrdersAdapter extends FirebaseRecyclerAdapter<Order, OrderListProdu
          * get the zeroth item to display in the list.
          */
         String imageUrl = model.getPhotoUrl();
-        ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
+        Glide.with(mActivity).load(imageUrl)
+                .asBitmap().placeholder(R.mipmap.price_tag)
+                .centerCrop().into(viewHolder.mImageView);
 
         viewHolder.mBrand.setText(model.getBrand());
         viewHolder.mPriceAfter.setText(model.getPriceAfter());

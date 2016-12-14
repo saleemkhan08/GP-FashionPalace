@@ -26,6 +26,9 @@ public class NotificationViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.username)
     public TextView mUsername;
 
+    @Bind(R.id.deleteNotification)
+    public ImageView mDeleteNotification;
+
     @Bind(R.id.notificationMsg)
     public TextView mNotificationMsg;
 

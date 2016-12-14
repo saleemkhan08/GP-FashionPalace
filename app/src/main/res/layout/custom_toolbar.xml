@@ -4,10 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/white">
+
     <RelativeLayout
-        android:layout_width="?attr/actionBarSize"
         android:id="@+id/drawerHomeContainer"
+        android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize">
+
         <com.thnki.gp.fashion.palace.view.SquareImageView
             android:id="@+id/home"
             android:layout_width="?attr/actionBarSize"
@@ -16,8 +18,8 @@
             android:background="@drawable/bg_accent_drawable"
             android:clickable="true"
             android:padding="15dp"
-            android:visibility="gone"
-            android:src="@mipmap/home_primary"/>
+            android:src="@mipmap/home_primary"
+            android:visibility="gone"/>
 
         <com.thnki.gp.fashion.palace.view.SquareImageView
             android:id="@+id/drawer"
@@ -38,9 +40,9 @@
         android:layout_toStartOf="@+id/cart"
         android:gravity="center_vertical"
         android:text="@string/app_name"
-        android:textSize="28sp"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/colorSecondaryLight"
+        android:textSize="28sp"
         android:textStyle="bold"/>
 
     <com.thnki.gp.fashion.palace.view.SquareImageView
@@ -73,17 +75,6 @@
         android:clickable="true"
         android:padding="@dimen/toolbar_img_padding"
         android:src="@mipmap/favorite_fill_primary"/>
-
-    <com.thnki.gp.fashion.palace.view.SquareImageView
-        android:id="@+id/deleteIcon"
-        android:layout_width="?attr/actionBarSize"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/bg_accent_drawable"
-        android:clickable="true"
-        android:visibility="gone"
-        android:padding="@dimen/toolbar_img_padding"
-        android:src="@mipmap/delete_bin"/>
 
     <TextView
         android:id="@+id/favCount"

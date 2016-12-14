@@ -74,9 +74,6 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
     public static final String RESTART_ACTIVITY = "restartActivity";
     public static final String ON_REQUEST_PERMISSION_RESULT = "onRequestPermissionResult";
     public static final String LOG_OUT = "logOut";
-    public static final String SHOW_DELETE_ICON = "showDeleteIcon";
-    public static final String HIDE_DELETE_ICON = "hideDeleteIcon";
-    public static final String DELETE_ICON_CLICKED = "deleteIconClicked";
 
     @Bind(R.id.content_main)
     RelativeLayout mContainer;
@@ -98,9 +95,6 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Bind(R.id.favorite)
     View mFavIcon;
-
-    @Bind(R.id.deleteIcon)
-    View mDeleteIcon;
 
     private String mCurrentFragment = "";
     private String mGoogleId;
@@ -702,39 +696,6 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     @Subscribe
-    public void showDeleteIcon(String action)
-    {
-        if (action.equals(SHOW_DELETE_ICON))
-        {
-            mFavCount.setVisibility(View.GONE);
-            mCartCount.setVisibility(View.GONE);
-            mCartIcon.setVisibility(View.GONE);
-            mFavIcon.setVisibility(View.GONE);
-            mDeleteIcon.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @OnClick(R.id.deleteIcon)
-    public void deleteClicked()
-    {
-        Otto.post(DELETE_ICON_CLICKED);
-        hideDeleteIcon(HIDE_DELETE_ICON);
-    }
-
-    @Subscribe
-    public void hideDeleteIcon(String action)
-    {
-        if (HIDE_DELETE_ICON.equals(action))
-        {
-            mFavCount.setVisibility(View.VISIBLE);
-            mCartCount.setVisibility(View.VISIBLE);
-            mCartIcon.setVisibility(View.VISIBLE);
-            mFavIcon.setVisibility(View.VISIBLE);
-            mDeleteIcon.setVisibility(View.GONE);
-        }
-    }
-
-    @Subscribe
     public void snack(Integer resId)
     {
         Snackbar snackbar = Snackbar
@@ -746,7 +707,7 @@ public class StoreActivity extends AppCompatActivity implements GoogleApiClient.
         textView.setGravity(CENTER_HORIZONTAL);
         textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        layout.setBackgroundResource(R.color.colorPrimary);
+        layout.setBackgroundResource(R.color.colorAccent);
         snackbar.show();
     }
 }

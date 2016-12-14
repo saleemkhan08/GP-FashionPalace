@@ -5,9 +5,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 import com.thnki.gp.fashion.palace.fragments.ImagePagerFragment;
+
+import java.util.ArrayList;
 
 public class ShopGalleryPagerAdapter extends FragmentStatePagerAdapter
 {
@@ -29,7 +29,7 @@ public class ShopGalleryPagerAdapter extends FragmentStatePagerAdapter
     public Fragment getItem(int position)
     {
         String url = mPhotoUrls.get(position);
-        Log.d("SectionsPho", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
+        Log.d("FirstImageIssue", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
         return ImagePagerFragment.getInstance(url);
     }
 

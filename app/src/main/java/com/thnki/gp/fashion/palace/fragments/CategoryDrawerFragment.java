@@ -2,8 +2,11 @@ package com.thnki.gp.fashion.palace.fragments;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,12 +16,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.Brandfever;
@@ -231,13 +235,11 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
 
     private RecyclerView.Adapter getAdapter()
     {
-        Query query = mAvailableCategoriesRef.orderByChild(CATEGORY_ID);
-        query.keepSynced(true);
         return new FirebaseRecyclerAdapter<Category, DrawerCategoryViewHolder>(
                 Category.class,
                 R.layout.category_list_item,
                 DrawerCategoryViewHolder.class,
-                query)
+                mAvailableCategoriesRef.orderByChild(CATEGORY_ID))
         {
 
             @Override
@@ -247,7 +249,18 @@ public class CategoryDrawerFragment extends Fragment implements ValueEventListen
                 String imageUrl = model.getCategoryImage();
                 if (imageUrl != null && !imageUrl.isEmpty() && mIsFirstLevelCategory)
                 {
-                    ImageUtil.displayRoundedImage(imageUrl, viewHolder.mImageView);
+                    Glide.with(getActivity()).load(imageUrl)
+                            .asBitmap().centerCrop().into(new BitmapImageViewTarget(viewHolder.mImageView)
+                    {
+                        @Override
+                        protected void setResource(Bitmap resource)
+                        {
+                            RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(mResources, resource);
+                            circularBitmapDrawable.setCircular(true);
+                            viewHolder.mImageView.setImageDrawable(circularBitmapDrawable);
+                        }
+                    });
                 }
                 else
                 {

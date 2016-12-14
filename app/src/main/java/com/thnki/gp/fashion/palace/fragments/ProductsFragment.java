@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -82,6 +83,7 @@ public class ProductsFragment extends Fragment
     private StorageReference mCategoryStorageRef;
     private FirebaseRecyclerAdapter mAdapter;
     private StoreActivity mActivity;
+    private boolean mIsRequestingPermission;
 
     public ProductsFragment()
     {
@@ -188,6 +190,7 @@ public class ProductsFragment extends Fragment
             }
             else
             {
+                mIsRequestingPermission = true;
                 mActivity.requestSdCardPermission();
             }
         }
@@ -200,8 +203,9 @@ public class ProductsFragment extends Fragment
     @Subscribe
     public void getImages(String action)
     {
-        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT))
+        if (action.equals(StoreActivity.ON_REQUEST_PERMISSION_RESULT) && mIsRequestingPermission)
         {
+            mIsRequestingPermission = false;
             getImages();
         }
     }
@@ -435,7 +439,9 @@ public class ProductsFragment extends Fragment
                  * get the zeroth item to display in the list.
                  */
                 String imageUrl = model.getPhotoUrlList().get(0);
-                ImageUtil.displayImage(imageUrl,viewHolder.mImageView);
+                Glide.with(mActivity).load(imageUrl)
+                        .asBitmap().placeholder(R.mipmap.price_tag)
+                        .centerCrop().into(viewHolder.mImageView);
 
                 viewHolder.mBrand.setText(model.getBrand());
                 viewHolder.mPriceAfter.setText(model.getPriceAfter());

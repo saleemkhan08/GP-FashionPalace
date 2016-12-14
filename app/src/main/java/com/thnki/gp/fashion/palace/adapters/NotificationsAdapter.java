@@ -5,10 +5,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
-import com.squareup.otto.Subscribe;
 import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
@@ -17,16 +17,10 @@ import com.thnki.gp.fashion.palace.models.Accounts;
 import com.thnki.gp.fashion.palace.models.NotificationModel;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
-import com.thnki.gp.fashion.palace.utils.ImageUtil;
 import com.thnki.gp.fashion.palace.utils.OrdersUtil;
 import com.thnki.gp.fashion.palace.view.holders.NotificationViewHolder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindString;
-
-import static com.thnki.gp.fashion.palace.StoreActivity.HIDE_DELETE_ICON;
 
 public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationModel, NotificationViewHolder>
 {
@@ -55,9 +49,6 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationMo
 
     @BindString(R.string.orderCancelled)
     String ORDER_CANCELLED;
-
-    private boolean mIsLongClicked;
-    private Map<String, Boolean> mMap;
     private DatabaseReference mRef;
 
     public static NotificationsAdapter getInstance(DatabaseReference reference, Activity activity)
@@ -76,33 +67,28 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationMo
         super(modelClass, modelLayout, viewHolderClass, ref);
         Log.d(NotificationListFragment.TAG, "NotificationsAdapter");
         mActivity = activity;
-        mMap = new HashMap<>();
         Otto.register(this);
     }
 
     @Override
     protected void populateViewHolder(final NotificationViewHolder viewHolder, final NotificationModel model, final int position)
     {
-        mMap.put(NotificationsAdapter.this.getRef(position).getKey(), false);
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener()
-        {
-            @Override
-            public boolean onLongClick(View view)
-            {
-                Otto.post(StoreActivity.SHOW_DELETE_ICON);
-                viewHolder.mParentView.setBackgroundResource(R.color.colorAccentTransparent);
-                mIsLongClicked = true;
-                return false;
-            }
-        });
-
         viewHolder.mNotificationMsg.setText(model.notification);
 
         final boolean isCurrentUserOwner = Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false);
 
-        ImageUtil.displayImage(model.photoUrl, R.mipmap.notification_place_holder, viewHolder.mUserImageView);
+        Glide.with(mActivity).load(model.photoUrl)
+                .asBitmap().placeholder(R.mipmap.user_icon_accent)
+                .centerCrop().into(viewHolder.mUserImageView);
         viewHolder.mUsername.setText(model.username);
-
+        viewHolder.mDeleteNotification.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mRef.child(model.notificationId).removeValue();
+            }
+        });
         Log.d(NotificationListFragment.TAG, "populateViewHolder Before Switch : " + model.action);
 
         switch (model.action)
@@ -157,65 +143,34 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<NotificationMo
             @Override
             public void onClick(View view)
             {
-                if (!mIsLongClicked)
+                if (ConnectivityUtil.isConnected())
                 {
-                    if (ConnectivityUtil.isConnected())
+                    if (isCurrentUserOwner)
                     {
-                        if (isCurrentUserOwner)
-                        {
-                            ((StoreActivity) mActivity).showUserOrdersFragment(model.googleId);
-                        }
-                        else
-                        {
-                            ((StoreActivity) mActivity).showUserOrdersFragment(Brandfever.getPreferences().getString(Accounts.GOOGLE_ID, ""));
-                        }
+                        ((StoreActivity) mActivity).showUserOrdersFragment(model.googleId);
                     }
                     else
                     {
-                        Otto.post(R.string.noInternet);
+                        ((StoreActivity) mActivity).showUserOrdersFragment(Brandfever.getPreferences().getString(Accounts.GOOGLE_ID, ""));
                     }
                 }
                 else
                 {
-                    if (!mMap.get(NotificationsAdapter.this.getRef(position).getKey()))
-                    {
-                        mMap.put(NotificationsAdapter.this.getRef(position).getKey(), true);
-                        viewHolder.mParentView.setBackgroundResource(R.color.colorAccentTransparent);
-                    }
-                    else
-                    {
-                        mMap.put(NotificationsAdapter.this.getRef(position).getKey(), false);
-                        viewHolder.mParentView.setBackgroundResource(R.color.transparentWhite);
-                    }
+                    Otto.post(R.string.noInternet);
                 }
             }
         });
     }
 
-    @Subscribe
-    public void deleteNotifications(String action)
-    {
-        if (action.equals(StoreActivity.DELETE_ICON_CLICKED))
-        {
-            mIsLongClicked = false;
-        }
-        for (Map.Entry<String, Boolean> set : mMap.entrySet())
-        {
-            if (set.getValue())
-            {
-                mRef.child(set.getKey()).removeValue();
-            }
-        }
-    }
-
     private void loadImage(int resId, ImageView view)
     {
-        ImageUtil.displayImage(resId, view);
+        Glide.with(mActivity).load(resId)
+                .asBitmap().placeholder(R.mipmap.shopping_cart)
+                .centerCrop().into(view);
     }
 
     public void unregister()
     {
         Otto.unregister(this);
-        Otto.post(HIDE_DELETE_ICON);
     }
 }
