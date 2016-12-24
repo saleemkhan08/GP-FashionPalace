@@ -6,37 +6,39 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
 import com.thnki.gp.fashion.palace.fragments.ImagePagerFragment;
+import com.thnki.gp.fashion.palace.models.GalleryImage;
 
 import java.util.ArrayList;
 
 public class ShopGalleryPagerAdapter extends FragmentStatePagerAdapter
 {
-    private ArrayList<String> mPhotoUrls;
+    private ArrayList<GalleryImage> mGalleryImages;
 
     public boolean mIsDataSetUpdated;
+
     public ShopGalleryPagerAdapter(FragmentManager fragmentManager)
     {
         super(fragmentManager);
     }
 
-    public void updateDataSet(ArrayList<String> photoUrls)
+    public void updateDataSet(ArrayList<GalleryImage> galleryImages)
     {
-        mPhotoUrls = photoUrls;
+        mGalleryImages = galleryImages;
         notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position)
     {
-        String url = mPhotoUrls.get(position);
-        Log.d("FirstImageIssue", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
+        String url = mGalleryImages.get(position).url;
+        Log.d("FirstImageIssue", "mPhotoUrlKeys : " + mGalleryImages.toString() + ", mPhotoUrls : " + mGalleryImages.toString());
         return ImagePagerFragment.getInstance(url);
     }
 
     @Override
     public int getItemPosition(Object object)
     {
-        if(mIsDataSetUpdated)
+        if (mIsDataSetUpdated)
         {
             mIsDataSetUpdated = false;
             return POSITION_NONE;
@@ -47,11 +49,11 @@ public class ShopGalleryPagerAdapter extends FragmentStatePagerAdapter
     @Override
     public int getCount()
     {
-        return mPhotoUrls.size();
+        return mGalleryImages.size();
     }
 
     public String getItemUrl(int position)
     {
-        return mPhotoUrls.get(position);
+        return mGalleryImages.get(position).url;
     }
 }

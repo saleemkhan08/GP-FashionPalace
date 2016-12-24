@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -25,6 +26,12 @@ import static com.thnki.gp.fashion.palace.Brandfever.getResString;
 public class FavoritesAdapter extends FirebaseRecyclerAdapter<FavoriteProduct, WishListProductViewHolder>
 {
     private Activity mActivity;
+
+    @Override
+    public WishListProductViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        return super.onCreateViewHolder(parent, viewType);
+    }
 
     public static FavoritesAdapter getInstance(DatabaseReference reference, Activity activity)
     {

@@ -1,6 +1,5 @@
 package com.thnki.gp.fashion.palace.fragments;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
@@ -20,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +36,7 @@ import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.StoreActivity;
 import com.thnki.gp.fashion.palace.adapters.ShopGalleryPagerAdapter;
 import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.GalleryImage;
 import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
@@ -44,8 +45,6 @@ import com.thnki.gp.fashion.palace.utils.UserUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -67,20 +66,15 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
     @Bind(R.id.pageIndicatorContainer)
     LinearLayout mPageIndicatorContainer;
 
-    @Bind(R.id.deletePhoto)
-    ImageView mDeletePhotoImageView;
+    @Bind(R.id.editPhotos)
+    FloatingActionButton mEditPhotos;
 
     @Bind(R.id.uploadMorePhotos)
-    ImageView mUploadPhotoImageView;
+    FloatingActionButton mUploadPhotoImageView;
 
     private ShopGalleryPagerAdapter mAdapter;
-    public ArrayList<String> mPhotoUrlList;
-    public ArrayList<String> mPhotoNameList;
+    public ArrayList<GalleryImage> mGalleryImagesList;
 
-    public Map<String, String> mGalleryPhotosMap;
-
-    private String mCurrentPhotoUrl = "";
-    private String mCurrentPhotoName = "";
     private ProgressDialog mProgressDialog;
     private StorageReference mStorageRef;
     private DatabaseReference mDbRef;
@@ -125,26 +119,27 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                 {
                     if (dataSnapshot != null && dataSnapshot.getChildrenCount() >= 1 && getActivity() != null)
                     {
-                        mGalleryPhotosMap = new LinkedHashMap<>();
-                        mPhotoUrlList = new ArrayList<>();
-                        mPhotoNameList = new ArrayList<>();
-                        mGalleryPhotosMap = (Map<String, String>) dataSnapshot.getValue();
-                        for (Map.Entry<String, String> set : mGalleryPhotosMap.entrySet())
+                        Log.d("mGalleryImagesList", "" + dataSnapshot.getChildrenCount());
+                        mGalleryImagesList = new ArrayList<>();
+                        Iterable<DataSnapshot> snapshots = dataSnapshot.getChildren();
+                        for (DataSnapshot snapshot : snapshots)
                         {
-                            mPhotoUrlList.add(set.getValue());
-                            mPhotoNameList.add(set.getKey());
+                            mGalleryImagesList.add(snapshot.getValue(GalleryImage.class));
                         }
-                        mAdapter.updateDataSet(mPhotoUrlList);
+                        mAdapter.updateDataSet(mGalleryImagesList);
                         mGalleryImagePager.setAdapter(mAdapter);
                         mGalleryImagePager.addOnPageChangeListener(GalleryFragment.this);
                         mGalleryImagePager.setVisibility(View.VISIBLE);
-                        updatePageIndicator(mPhotoUrlList.size());
+                        updatePageIndicator(mGalleryImagesList.size());
+                        //mEditGalleryFragment.setGalleryImageList(mGalleryImagesList, mDbRef);
                         pageSwitcher();
+
                     }
                 }
                 catch (Exception e)
                 {
                     e.printStackTrace();
+                    Log.d("mGalleryImagesList", "" + e.getMessage());
                 }
             }
 
@@ -213,51 +208,15 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
         }
     }
 
-    @OnClick(R.id.deletePhoto)
-    public void deleteImage()
+    @OnClick(R.id.editPhotos)
+    public void editPhotos()
     {
-        if (ConnectivityUtil.isConnected())
+        if (ConnectivityUtil.isConnected() && mGalleryImagesList != null)
         {
-            if (mPhotoUrlList.size() > 1)
-            {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                builder.setMessage(R.string.areYouSureYouWantToDeleteThisImage);
-                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-
-                    }
-                }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-
-                        int position = mPageNum - 1;
-                        if (position < 0)
-                        {
-                            position = 0;
-                        }
-                        else if (position >= mPhotoNameList.size())
-                        {
-                            position = mPhotoNameList.size() - 1;
-                        }
-                        Log.d("DeleteError", position + " : " + mCurrentPhotoName + " = " + mPhotoNameList.get(position));
-                        mStorageRef.child(mPhotoNameList.get(position)).delete();
-                        mPhotoNameList.remove(position);
-                        mPhotoUrlList.remove(position);
-                        mGalleryPhotosMap.remove(mPhotoNameList.get(position));
-                        mDbRef.setValue(mGalleryPhotosMap);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }).show();
-            }
-            else
-            {
-                Otto.post(R.string.youCannotDeleteAllTheImages);
-            }
+            EditGalleryFragment editGalleryFragment = new EditGalleryFragment();
+            editGalleryFragment.setGalleryImageList(mGalleryImagesList, mDbRef);
+            editGalleryFragment.show(mActivity.getSupportFragmentManager(),
+                    EditGalleryFragment.TAG);
         }
         else
         {
@@ -354,7 +313,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
 
     private void uploadMorePhotos(ArrayList<String> mImagesEncodedList)
     {
-        final int currentSize = mPhotoUrlList.size();
+        final int currentSize = mGalleryImagesList.size();
         final int noOfUploadingPhoto = mImagesEncodedList.size();
         setupProgressDialog(noOfUploadingPhoto);
 
@@ -413,7 +372,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
     {
         Log.d("PhotoUploadFlow", "updateProgressDialog");
         Uri downloadUri = taskSnapshot.getDownloadUrl();
-        int listSize = mPhotoUrlList.size();
+        int listSize = mGalleryImagesList.size();
         int size = listSize - currentSize + 1;
 
         if (downloadUri != null)
@@ -421,14 +380,14 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
             String url = downloadUri.toString();
             if (!url.trim().isEmpty())
             {
-                mPhotoUrlList.add(url);
-                mPhotoNameList.add(photoName);
-
-                mGalleryPhotosMap.put(photoName, url);
-                mDbRef.setValue(mGalleryPhotosMap);
+                GalleryImage image = new GalleryImage();
+                image.url = url;
+                image.name = photoName;
+                mGalleryImagesList.add(image);
+                mDbRef.setValue(mGalleryImagesList);
             }
         }
-        Log.d("PhotoUploadFlow", "listSize before : " + listSize + ", after : " + mPhotoUrlList.size());
+        Log.d("PhotoUploadFlow", "listSize before : " + listSize + ", after : " + mGalleryImagesList.size());
         Log.d("PhotoUploadFlow", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
 
         if (size >= noOfUploadingPhoto)
@@ -444,7 +403,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                     Otto.post(R.string.uploaded);
                 }
                 mGalleryImagePager.setCurrentItem(0, false);
-                mGalleryImagePager.setCurrentItem(mPhotoUrlList.size() - 1, true);
+                mGalleryImagePager.setCurrentItem(mGalleryImagesList.size() - 1, true);
             }
             return;
         }
@@ -508,7 +467,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
                 public void run()
                 {
                     mPageNum++;
-                    if (mPageNum == mPhotoNameList.size())
+                    if (mPageNum == mGalleryImagesList.size())
                     {
                         mPageNum = 0;
                     }
@@ -547,12 +506,12 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
             Log.d("OWNER_PROFILE_UPDATED", "Action : " + action);
             if (Brandfever.getPreferences().getBoolean(Accounts.IS_OWNER, false))
             {
-                mDeletePhotoImageView.setVisibility(View.VISIBLE);
+                mEditPhotos.setVisibility(View.VISIBLE);
                 mUploadPhotoImageView.setVisibility(View.VISIBLE);
             }
             else
             {
-                mDeletePhotoImageView.setVisibility(View.GONE);
+                mEditPhotos.setVisibility(View.GONE);
                 mUploadPhotoImageView.setVisibility(View.GONE);
             }
         }
@@ -569,9 +528,6 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
     {
         highLightPageIndicator(position);
         mPageNum = position;
-        mCurrentPhotoUrl = mAdapter.getItemUrl(position);
-        mCurrentPhotoName = mPhotoNameList.get(position);
-        Log.d("FirstImageIssue", mCurrentPhotoName + " : " + mCurrentPhotoUrl + " > " + position);
     }
 
     @Override

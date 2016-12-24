@@ -7,6 +7,7 @@
 
     <android.support.v4.view.ViewPager
         android:id="@+id/galleryImagePager"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
@@ -36,13 +37,13 @@
         fab:fab_size="mini"/>
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/deletePhoto"
+        android:id="@+id/editPhotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:visibility="gone"
-        app:fab_icon="@mipmap/delete_forever_white"
+        app:fab_icon="@mipmap/edit_icon_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>

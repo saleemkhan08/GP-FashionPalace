@@ -267,4 +267,6 @@
     <string name="areYouSureYouWantToLogout">Are You Sure You Want To Logout?</string>
     <string name="xProducts">x</string>
     <string name="closingApplication">Closing Application ...</string>
+    <string name="gallery">Gallery</string>
+    <string name="saving">Saving...</string>
 </resources>
