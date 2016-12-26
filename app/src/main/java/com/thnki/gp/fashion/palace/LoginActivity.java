@@ -302,7 +302,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 startActivity(intent);
                 finish();
             }
-        }, 500);
+        }, 1000);
     }
 
     @Override

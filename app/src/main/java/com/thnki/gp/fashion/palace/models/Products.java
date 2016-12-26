@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class Products
 {
-    public static final String PHOTO_URL = "photoUrlList";
+    public static final String GALLERY_IMAGES_LIST = "galleryImagesList";
     public static final String PHOTO_NAME = "photoNameList";
     public static final String ORDER_STATUS = "orderStatus";
     public static final String PRODUCT_ID = "productId";
@@ -30,8 +30,7 @@ public class Products
     private Map<String, Integer> sizesMap;
     private String material;
     private String priceBefore;
-    private ArrayList<String> photoUrlList;
-    private ArrayList<String> photoNameList;
+    private ArrayList<GalleryImage> galleryImagesList;
     private static final String NOT_SPECIFIED = "Not Specified";
     private long timeStamp;
 
@@ -41,10 +40,9 @@ public class Products
 
     public Products(String photoUrl, String photoName, String categoryId, String key)
     {
-        photoUrlList = new ArrayList<>();
-        photoNameList = new ArrayList<>();
-        photoNameList.add(photoName);
-        photoUrlList.add(photoUrl);
+        galleryImagesList = new ArrayList<>();
+        GalleryImage image = new GalleryImage(photoUrl, photoName);
+        galleryImagesList.add(image);
         this.categoryId = categoryId;
         brand = Brandfever.APP_NAME_FULL;
         priceAfter = "1000";
@@ -59,7 +57,7 @@ public class Products
         sizesMap.put(Brandfever.getResString(R.string.xxl), 0);
         material = NOT_SPECIFIED;
         productId = key;
-        timeStamp = - System.currentTimeMillis();
+        timeStamp = -System.currentTimeMillis();
     }
 
     public static String generateRandomKey()
@@ -174,24 +172,14 @@ public class Products
         this.priceBefore = priceBefore;
     }
 
-    public ArrayList<String> getPhotoUrlList()
+    public ArrayList<GalleryImage> getGalleryImagesList()
     {
-        return photoUrlList;
+        return galleryImagesList;
     }
 
-    public void setPhotoUrlList(ArrayList<String> photoUrlList)
+    public void setGalleryImagesList(ArrayList<GalleryImage> galleryImagesList)
     {
-        this.photoUrlList = photoUrlList;
-    }
-
-    public ArrayList<String> getPhotoNameList()
-    {
-        return photoNameList;
-    }
-
-    public void setPhotoNameList(ArrayList<String> photoNameList)
-    {
-        this.photoNameList = photoNameList;
+        this.galleryImagesList = galleryImagesList;
     }
 
     public long getTimeStamp()

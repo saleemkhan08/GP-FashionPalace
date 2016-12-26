@@ -8,17 +8,17 @@
 
     <android.support.v4.view.ViewPager
         android:id="@+id/productImagePager"
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"/>
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"/>
 
     <LinearLayout
         android:id="@+id/pageIndicatorContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
         android:layout_marginBottom="15dp"
         android:orientation="horizontal">
     </LinearLayout>
@@ -29,21 +29,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:visibility="gone"
         android:layout_margin="10dp"
+        android:visibility="gone"
         app:fab_icon="@mipmap/photo_camera_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/deletePhoto"
+        android:id="@+id/editGalleryImages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
         android:visibility="gone"
-        app:fab_icon="@mipmap/delete_forever_white"
+        app:fab_icon="@mipmap/edit_icon_white"
         fab:fab_colorNormal="@color/colorAccent"
         fab:fab_colorPressed="@color/colorAccentPressed"
         fab:fab_size="mini"/>

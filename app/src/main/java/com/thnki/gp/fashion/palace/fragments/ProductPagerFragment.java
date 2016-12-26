@@ -1,6 +1,5 @@
 package com.thnki.gp.fashion.palace.fragments;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
@@ -17,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +26,7 @@ import com.thnki.gp.fashion.palace.Brandfever;
 import com.thnki.gp.fashion.palace.R;
 import com.thnki.gp.fashion.palace.adapters.SectionsPagerAdapter;
 import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.GalleryImage;
 import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.ConnectivityUtil;
@@ -41,37 +42,31 @@ import butterknife.OnClick;
 import static android.app.Activity.RESULT_OK;
 import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.fragments.ProductsFragment.PICK_IMAGE_MULTIPLE;
-import static com.thnki.gp.fashion.palace.models.Products.PHOTO_NAME;
-import static com.thnki.gp.fashion.palace.models.Products.PHOTO_URL;
 
 public class ProductPagerFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
-    public static final String IMAGE_DELETED = "imageDeleted";
-
     @Bind(R.id.productImagePager)
     ViewPager mProductImagePager;
 
     @Bind(R.id.pageIndicatorContainer)
     LinearLayout mPageIndicatorContainer;
 
-    @Bind(R.id.deletePhoto)
-    ImageView mDeletePhotoImageView;
+    @Bind(R.id.editGalleryImages)
+    FloatingActionButton mDeletePhotoImageView;
 
     @Bind(R.id.uploadMorePhotos)
-    ImageView mUploadPhotoImageView;
+    FloatingActionButton mUploadPhotoImageView;
 
     private SectionsPagerAdapter mAdapter;
     private Products mProduct;
 
-    public ArrayList<String> mPhotoUrlList;
-    public ArrayList<String> mPhotoNameList;
+    public ArrayList<GalleryImage> mGalleryImages;
 
-    private String mCurrentPhotoUrl = "";
-    private String mCurrentPhotoName = "";
     private ProgressDialog mProgressDialog;
     private StorageReference mProductStorageRef;
     private DatabaseReference mProductDbRef;
     private volatile boolean mIsCancelled = false;
+    private DatabaseReference mGalleryDbRef;
 
     public ProductPagerFragment()
     {
@@ -83,10 +78,10 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     {
         mProductStorageRef = productStorageRef;
         mProductDbRef = productDbRef;
+        mGalleryDbRef = mProductDbRef.child("galleryImagesList");
         mProduct = product;
-        mPhotoUrlList = product.getPhotoUrlList();
-        mPhotoNameList = product.getPhotoNameList();
-        if (mPhotoUrlList == null)
+        mGalleryImages = product.getGalleryImagesList();
+        if (mGalleryImages == null)
         {
             Otto.post(R.string.productNotAvailable);
             getActivity().finish();
@@ -115,21 +110,21 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         {
             mDeletePhotoImageView.setVisibility(View.VISIBLE);
             mUploadPhotoImageView.setVisibility(View.VISIBLE);
-            mProductImagePager.setVisibility(View.VISIBLE);
         }
+        mProductImagePager.setVisibility(View.VISIBLE);
     }
 
     private void updateImagePager()
     {
         mAdapter.mIsDataSetUpdated = true;
-        mAdapter.updateDataSet(mPhotoUrlList);
-        updatePageIndicator(mPhotoUrlList.size());
+        mAdapter.updateDataSet(mGalleryImages);
+        updatePageIndicator(mGalleryImages.size());
         mProductImagePager.setCurrentItem(0, true);
     }
 
     private void uploadMorePhotos(ArrayList<String> mImagesEncodedList)
     {
-        final int currentSize = mPhotoUrlList.size();
+        final int currentSize = mGalleryImages.size();
         final int noOfUploadingPhoto = mImagesEncodedList.size();
         setupProgressDialog(noOfUploadingPhoto);
 
@@ -188,7 +183,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     {
         Log.d("PhotoUploadFlow", "updateProgressDialog");
         Uri downloadUri = taskSnapshot.getDownloadUrl();
-        int listSize = mPhotoUrlList.size();
+        int listSize = mGalleryImages.size();
         int size = listSize - currentSize + 1;
 
         if (downloadUri != null)
@@ -196,17 +191,13 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
             String url = downloadUri.toString();
             if (!url.trim().isEmpty())
             {
-                mPhotoUrlList.add(url);
-                mPhotoNameList.add(photoName);
+                mGalleryImages.add(new GalleryImage(url, photoName));
 
-                mProductDbRef.child(Products.PHOTO_URL).setValue(mPhotoUrlList);
-                mProductDbRef.child(Products.PHOTO_NAME).setValue(mPhotoNameList);
-
-                mProduct.setPhotoUrlList(mPhotoUrlList);
-                mProduct.setPhotoNameList(mPhotoNameList);
+                mProductDbRef.child(Products.GALLERY_IMAGES_LIST).setValue(mGalleryImages);
+                mProduct.setGalleryImagesList(mGalleryImages);
             }
         }
-        Log.d("PhotoUploadFlow", "listSize before : " + listSize + ", after : " + mPhotoUrlList.size());
+        Log.d("PhotoUploadFlow", "listSize before : " + listSize + ", after : " + mGalleryImages.size());
         Log.d("PhotoUploadFlow", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
 
         if (size >= noOfUploadingPhoto)
@@ -223,7 +214,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
                 }
                 updateImagePager();
                 mProductImagePager.setCurrentItem(0, false);
-                mProductImagePager.setCurrentItem(mPhotoUrlList.size() - 1, true);
+                mProductImagePager.setCurrentItem(mGalleryImages.size() - 1, true);
             }
             return;
         }
@@ -262,52 +253,15 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
         mProgressDialog.setMessage("Uploading " + 1 + " of " + noOfUploadingPhoto);
     }
 
-    @OnClick(R.id.deletePhoto)
-    public void deleteImage()
+    @OnClick(R.id.editGalleryImages)
+    public void editGalleryImages()
     {
-        if (ConnectivityUtil.isConnected())
+        if (ConnectivityUtil.isConnected() && mGalleryImages != null)
         {
-            if (mPhotoUrlList.size() > 1)
-            {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.areYouSureYouWantToDeleteThisImage);
-                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-
-                    }
-                }).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        if (mCurrentPhotoUrl == null || mCurrentPhotoUrl.isEmpty())
-                        {
-                            mCurrentPhotoUrl = mAdapter.getItemUrl(0);
-                            mCurrentPhotoName = mPhotoNameList.get(0);
-                        }
-                        mProductStorageRef.child(mCurrentPhotoName).delete();
-
-                        int position = mPhotoNameList.indexOf(mCurrentPhotoName);
-                        mPhotoNameList.remove(position);
-                        mPhotoUrlList.remove(position);
-
-                        mProduct.setPhotoUrlList(mPhotoUrlList);
-                        mProduct.setPhotoNameList(mPhotoNameList);
-
-                        mProductDbRef.child(PHOTO_URL).setValue(mPhotoUrlList);
-                        mProductDbRef.child(PHOTO_NAME).setValue(mPhotoNameList);
-                        updateImagePager();
-                        Otto.post(IMAGE_DELETED);
-                    }
-                }).show();
-            }
-            else
-            {
-                Otto.post(R.string.youCannotDeleteAllTheImages);
-            }
+            EditGalleryFragment editGalleryFragment = new EditGalleryFragment();
+            editGalleryFragment.setGalleryImageList(mGalleryImages, mGalleryDbRef);
+            editGalleryFragment.show(getActivity().getSupportFragmentManager(),
+                    EditGalleryFragment.TAG);
         }
         else
         {
@@ -354,24 +308,7 @@ public class ProductPagerFragment extends Fragment implements ViewPager.OnPageCh
     @Override
     public void onPageSelected(final int position)
     {
-        /*if (mPageIndicatorContainer.getChildCount() <= position)
-        {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    highLightPageIndicator(position);
-                }
-            }, DELAY);
-        }
-        else
-        {*/
         highLightPageIndicator(position);
-        //}
-        mCurrentPhotoUrl = mAdapter.getItemUrl(position);
-        mCurrentPhotoName = mPhotoNameList.get(position);
     }
 
     public View addIndicator()

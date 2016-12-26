@@ -86,6 +86,7 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
     private Handler mHandler = new Handler();
     private StoreActivity mActivity;
     private boolean mIsRequestingPermission;
+    private long mTimeEllapsed;
 
     public GalleryFragment()
     {
@@ -160,20 +161,24 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent)
             {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
+                if (mTimer != null)
                 {
-                    Log.d("TouchLog", "ACTION_BUTTON_PRESS");
-                    if (mTimer != null)
-                    {
-                        mTimer.cancel();
-                    }
+                    mTimer.cancel();
                 }
-                else if (motionEvent.getAction() == MotionEvent.ACTION_UP)
+                if (mTask != null)
                 {
-
-                    pageSwitcher();
+                    mTask.cancel();
+                }
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP)
+                {
+                    mTimeEllapsed = System.currentTimeMillis() - mTimeEllapsed;
+                    if (mTimeEllapsed >= 2900)
+                    {
+                        pageSwitcher();
+                    }
                     Log.d("TouchLog", "ACTION_BUTTON_RELEASE");
                 }
+                mTimeEllapsed = System.currentTimeMillis();
                 return false;
             }
         });
@@ -466,12 +471,18 @@ public class GalleryFragment extends Fragment implements ViewPager.OnPageChangeL
             {
                 public void run()
                 {
-                    mPageNum++;
-                    if (mPageNum == mGalleryImagesList.size())
+                    mTimeEllapsed = System.currentTimeMillis() - mTimeEllapsed;
+                    Log.d("GallerySkipIssue", "mTimeEllapsed : " + mTimeEllapsed);
+                    if (mTimeEllapsed >= 2900)
                     {
-                        mPageNum = 0;
+                        mPageNum++;
+                        if (mPageNum == mGalleryImagesList.size())
+                        {
+                            mPageNum = 0;
+                        }
+                        mGalleryImagePager.setCurrentItem(mPageNum);
                     }
-                    mGalleryImagePager.setCurrentItem(mPageNum);
+                    mTimeEllapsed = System.currentTimeMillis();
                 }
             });
         }

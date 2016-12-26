@@ -28,6 +28,7 @@ import butterknife.OnClick;
 public class EditGalleryFragment extends DialogFragment implements Const
 {
     public static final String TAG = "EditAddressDialogFragment";
+    public static final String GALLERY_CHANGES_SAVED = "galleryChangesSaved";
 
     @Bind(R.id.editGalleryRecyclerView)
     RecyclerView mEditGalleryRecyclerView;
@@ -89,6 +90,7 @@ public class EditGalleryFragment extends DialogFragment implements Const
     public void save()
     {
         mDbRef.setValue(mAdapter.getGalleryImagesList());
+        Otto.post(GALLERY_CHANGES_SAVED);
         dismiss();
     }
 }

@@ -14,7 +14,7 @@ public class FavoriteProduct
     public FavoriteProduct(Products product)
     {
         brand = product.getBrand();
-        photoUrl = product.getPhotoUrlList().get(0);
+        photoUrl = product.getGalleryImagesList().get(0).url;
         priceAfter = product.getPriceAfter();
         productId = product.getProductId();
         categoryId = product.getCategoryId();

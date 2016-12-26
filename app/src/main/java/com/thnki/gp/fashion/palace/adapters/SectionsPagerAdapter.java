@@ -5,13 +5,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 import com.thnki.gp.fashion.palace.fragments.SquareImagePagerFragment;
+import com.thnki.gp.fashion.palace.models.GalleryImage;
+
+import java.util.ArrayList;
 
 public class SectionsPagerAdapter extends FragmentStatePagerAdapter
 {
-    private ArrayList<String> mPhotoUrls;
+    private ArrayList<GalleryImage> mGalleryImages;
 
     public boolean mIsDataSetUpdated;
     public SectionsPagerAdapter(FragmentManager fragmentManager)
@@ -19,17 +20,17 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter
         super(fragmentManager);
     }
 
-    public void updateDataSet(ArrayList<String> photoUrls)
+    public void updateDataSet(ArrayList<GalleryImage> galleryImages)
     {
-        mPhotoUrls = photoUrls;
+        this.mGalleryImages = galleryImages;
         notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position)
     {
-        String url = mPhotoUrls.get(position);
-        Log.d("SectionsPho", "mPhotoUrlKeys : " + mPhotoUrls.toString() + ", mPhotoUrls : " + mPhotoUrls.toString());
+        String url = mGalleryImages.get(position).url;
+        Log.d("SectionsPho", "mPhotoUrlKeys : " + mGalleryImages.toString() + ", mPhotoUrls : " + mGalleryImages.toString());
         return SquareImagePagerFragment.getInstance(url);
     }
 
@@ -47,11 +48,6 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter
     @Override
     public int getCount()
     {
-        return mPhotoUrls.size();
-    }
-
-    public String getItemUrl(int position)
-    {
-        return mPhotoUrls.get(position);
+        return mGalleryImages.size();
     }
 }

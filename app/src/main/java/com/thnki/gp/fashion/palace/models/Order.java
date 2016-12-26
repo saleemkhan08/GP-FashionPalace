@@ -36,7 +36,7 @@ public class Order
     public Order(Products product, String orderStatus, String selectedSize)
     {
         brand = product.getBrand();
-        photoUrl = product.getPhotoUrlList().get(0);
+        photoUrl = product.getGalleryImagesList().get(0).url;
         priceAfter = product.getPriceAfter();
         priceBefore = product.getPriceBefore();
         this.selectedSize = selectedSize;

@@ -10,4 +10,10 @@ public class GalleryImage
 
     }
 
+    public GalleryImage(String url, String name)
+    {
+        this.name = name;
+        this.url = url;
+    }
+
 }

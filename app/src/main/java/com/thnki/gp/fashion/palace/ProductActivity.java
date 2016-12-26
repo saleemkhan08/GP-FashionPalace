@@ -29,9 +29,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.otto.Subscribe;
+import com.thnki.gp.fashion.palace.fragments.EditGalleryFragment;
 import com.thnki.gp.fashion.palace.fragments.EditProductDialogFragment;
 import com.thnki.gp.fashion.palace.fragments.ProductPagerFragment;
 import com.thnki.gp.fashion.palace.models.Accounts;
+import com.thnki.gp.fashion.palace.models.GalleryImage;
 import com.thnki.gp.fashion.palace.models.Products;
 import com.thnki.gp.fashion.palace.singletons.Otto;
 import com.thnki.gp.fashion.palace.utils.CartUtil;
@@ -263,9 +265,9 @@ public class ProductActivity extends AppCompatActivity
 
     private void showProductsFirstImage()
     {
-        if (mProduct.getPhotoUrlList() != null)
+        if (mProduct.getGalleryImagesList() != null)
         {
-            Glide.with(this).load(mProduct.getPhotoUrlList().get(0))
+            Glide.with(this).load(mProduct.getGalleryImagesList().get(0).url)
                     .crossFade()
                     .centerCrop().into(mTransitionImage);
         }
@@ -541,11 +543,11 @@ public class ProductActivity extends AppCompatActivity
     @Subscribe
     public void reloadProductImagesFragment(String action)
     {
-        if (action.equals(ProductPagerFragment.IMAGE_DELETED))
+        if (action.equals(EditGalleryFragment.GALLERY_CHANGES_SAVED))
         {
             ProgressDialog dialog = new ProgressDialog(this);
             dialog.setCancelable(false);
-            dialog.setMessage(getString(R.string.deleting));
+            dialog.setMessage(getString(R.string.updating));
             Handler handler = new Handler();
             handler.postDelayed(new Runnable()
             {
@@ -600,9 +602,9 @@ public class ProductActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
                     mProductDbRef.removeValue();
-                    for (String name : mProduct.getPhotoNameList())
+                    for (GalleryImage image : mProduct.getGalleryImagesList())
                     {
-                        mProductStorageRef.child(name).delete();
+                        mProductStorageRef.child(image.name).delete();
                     }
                     mProductStorageRef.delete();
                     finish();

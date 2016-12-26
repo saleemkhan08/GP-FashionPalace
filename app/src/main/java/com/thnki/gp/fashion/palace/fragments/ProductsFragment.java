@@ -2,6 +2,7 @@ package com.thnki.gp.fashion.palace.fragments;
 
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Paint;
@@ -53,6 +54,7 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
 import static com.thnki.gp.fashion.palace.Brandfever.getResString;
+import static com.thnki.gp.fashion.palace.Brandfever.toast;
 import static com.thnki.gp.fashion.palace.StoreActivity.RESTART_ACTIVITY;
 import static com.thnki.gp.fashion.palace.interfaces.Const.AVAILABLE_;
 
@@ -62,6 +64,8 @@ public class ProductsFragment extends Fragment
     public static final int PICK_IMAGE_MULTIPLE = 102;
     public static final String FRAGMENT_TAG = "fragmentTag";
     public static final int REQUEST_CODE_SDCARD_PERMISSION = 103;
+    private volatile boolean mIsCancelled = false;
+
     @Bind(R.id.productsRecyclerView)
     RecyclerView mProductRecyclerView;
 
@@ -281,33 +285,14 @@ public class ProductsFragment extends Fragment
 
     private void uploadIndividualProducts(ArrayList<String> mImagesEncodedList)
     {
-        //upload(mAdapter.mSelectImageMap);
-        /**
-
-         * 2. using the key create a folder in storage
-         * 3. save the url in the database.
-         */
         final int currentSize = mAdapter.getItemCount();
         final int noOfUploadingPhoto = mImagesEncodedList.size();
-        mProgressDialog.setMessage("Uploading " + 1 + " of " + noOfUploadingPhoto);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.show();
+        setupProgressDialog(noOfUploadingPhoto);
         for (String uri : mImagesEncodedList)
         {
-            /**
-             * 1. push an empty product to create a key
-             */
-
             final DatabaseReference product = mCategoryDbRef.push();
             final String key = product.getKey();
-
-            /**
-             * 2. create a folder in Storage using the key and
-             * create a file reference using generateRandomKey Generator defined in Products Model
-             */
-
             final String photoName = Products.generateRandomKey();
-
             Uri fileUri = Uri.parse(uri);
             final File destFile = ImageUtil.saveBitmapToFile(fileUri, key);
             StorageReference reference = mCategoryStorageRef.child(key).child(photoName);
@@ -316,20 +301,11 @@ public class ProductsFragment extends Fragment
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                 {
-
                     try
                     {
-                        /**
-                         * 3. put a file and get the download Url
-                         */
-
                         Uri downloadUri = taskSnapshot.getDownloadUrl();
                         if (downloadUri != null)
                         {
-                            /**
-                             * 4. Create a product using download Url, Current Category and the key generated previously
-                             */
-
                             Products products = new Products(downloadUri.toString(), photoName, mCurrentCategory, key);
                             product.setValue(products);
                         }
@@ -340,11 +316,32 @@ public class ProductsFragment extends Fragment
 
                         int size = mAdapter.getItemCount() - currentSize + 1;
                         Log.d("SizesIssue", "Size : " + size + ",currentSize : " + currentSize + ", noOfUploadingPhoto : " + noOfUploadingPhoto);
-                        if (size >= noOfUploadingPhoto)
+
+                        if (getActivity() != null)
                         {
-                            mProgressDialog.dismiss();
+                            if (size >= noOfUploadingPhoto)
+                            {
+                                if (mProgressDialog != null && !mIsCancelled)
+                                {
+                                    mProgressDialog.dismiss();
+                                }
+                                else
+                                {
+                                    toast(R.string.uploaded);
+                                }
+                            }
+                            else
+                            {
+                                if (mProgressDialog != null && !mIsCancelled)
+                                {
+                                    mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
+                                }
+                                else
+                                {
+                                    toast("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
+                                }
+                            }
                         }
-                        mProgressDialog.setMessage("Uploading " + (size + 1) + " of " + noOfUploadingPhoto);
                         if (destFile != null && destFile.exists())
                         {
                             destFile.delete();
@@ -352,6 +349,10 @@ public class ProductsFragment extends Fragment
                     }
                     catch (Exception e)
                     {
+                        if (mProgressDialog != null && mProgressDialog.isShowing())
+                        {
+                            mProgressDialog.dismiss();
+                        }
                         Log.d("Exception", e.getMessage());
                     }
 
@@ -361,7 +362,10 @@ public class ProductsFragment extends Fragment
                 @Override
                 public void onFailure(@NonNull Exception e)
                 {
-                    mProgressDialog.dismiss();
+                    if (mProgressDialog != null && mProgressDialog.isShowing())
+                    {
+                        mProgressDialog.dismiss();
+                    }
                     Otto.post(R.string.please_try_again);
                     product.removeValue();
                 }
@@ -438,7 +442,7 @@ public class ProductsFragment extends Fragment
                 /**
                  * get the zeroth item to display in the list.
                  */
-                String imageUrl = model.getPhotoUrlList().get(0);
+                String imageUrl = model.getGalleryImagesList().get(0).url;
                 Glide.with(mActivity).load(imageUrl)
                         .asBitmap().placeholder(R.mipmap.price_tag)
                         .centerCrop().into(viewHolder.mImageView);
@@ -494,5 +498,28 @@ public class ProductsFragment extends Fragment
     {
         super.onDestroy();
         Otto.unregister(this);
+    }
+
+    private void setupProgressDialog(int noOfUploadingPhoto)
+    {
+        mIsCancelled = false;
+        if (mProgressDialog == null)
+        {
+            mProgressDialog = new ProgressDialog(getActivity());
+        }
+
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+        {
+            @Override
+            public void onCancel(DialogInterface dialogInterface)
+            {
+                mIsCancelled = true;
+                Otto.post(R.string.photosWillBeUploadedInBackground);
+                mProgressDialog.dismiss();
+            }
+        });
+
+        mProgressDialog.show();
+        mProgressDialog.setMessage("Uploading " + 1 + " of " + noOfUploadingPhoto);
     }
 }
